@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">My Profile</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Profile Information Tab Navigation -->
+                    <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#profile-info" type="button" role="tab" 
+                                    aria-controls="profile-info" aria-selected="true">Profile Information</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="password-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#change-password" type="button" role="tab" 
+                                    aria-controls="change-password" aria-selected="false">Change Password</button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="profileTabsContent">
+                        <!-- Profile Information Tab -->
+                        <div class="tab-pane fade show active" id="profile-info" role="tabpanel" aria-labelledby="profile-tab">
+                            <form action="{{ url_for('update_profile') }}" method="POST">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" 
+                                               value="{{ current_user.username }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" 
+                                               value="{{ current_user.email }}" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="height" class="form-label">Height (cm)</label>
+                                        <input type="number" class="form-control" id="height" name="height" 
+                                               value="{{ current_user.height or '' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="weight" class="form-label">Weight (kg)</label>
+                                        <input type="number" class="form-control" id="weight" name="weight" 
+                                               value="{{ current_user.weight or '' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="availability" class="form-label">Weekly Availability (hours)</label>
+                                    <input type="number" class="form-control" id="availability" name="availability" 
+                                           value="{{ current_user.availability or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Fitness Goals</label>
+                                    <div class="row">
+                                        {% set user_goals = current_user.goals|default('[]')|from_json %}
+                                        {% for goal in ['Weight Loss', 'Muscle Building', 'Flexibility', 'Endurance', 'General Fitness'] %}
+                                            <div class="col-md-4 form-check ms-3">
+                                                <input class="form-check-input" type="checkbox" name="goals" 
+                                                       value="{{ goal }}" id="goal-{{ loop.index }}"
+                                                       {% if goal in user_goals %}checked{% endif %}>
+                                                <label class="form-check-label" for="goal-{{ loop.index }}">
+                                                    {{ goal }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Injury Areas</label>
+                                    <div class="row">
+                                        {% set user_restrictions = current_user.restrictions|default('{}')|from_json %}
+                                        {% set injury_areas = user_restrictions.get('injury_areas', []) %}
+                                        {% for area in ['Shoulders', 'Back', 'Knees', 'Hips', 'Ankles', 'Wrists'] %}
+                                            <div class="col-md-4 form-check ms-3">
+                                                <input class="form-check-input" type="checkbox" name="injury_areas" 
+                                                       value="{{ area }}" id="injury-{{ loop.index }}"
+                                                       {% if area in injury_areas %}checked{% endif %}>
+                                                <label class="form-check-label" for="injury-{{ loop.index }}">
+                                                    {{ area }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Limited Movements</label>
+                                    <div class="row">
+                                        {% set limited_movements = user_restrictions.get('limited_movements', []) %}
+                                        {% for movement in ['Push-ups', 'Pull-ups', 'Squats', 'Lunges', 'Deadlifts', 'Overhead Press'] %}
+                                            <div class="col-md-4 form-check ms-3">
+                                                <input class="form-check-input" type="checkbox" name="limited_movements" 
+                                                       value="{{ movement }}" id="movement-{{ loop.index }}"
+                                                       {% if movement in limited_movements %}checked{% endif %}>
+                                                <label class="form-check-label" for="movement-{{ loop.index }}">
+                                                    {{ movement }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Dietary Restrictions</label>
+                                    <div class="row">
+                                        {% set dietary_restrictions = user_restrictions.get('dietary_restrictions', []) %}
+                                        {% for diet in ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Keto', 'Paleo'] %}
+                                            <div class="col-md-4 form-check ms-3">
+                                                <input class="form-check-input" type="checkbox" name="dietary_restrictions" 
+                                                       value="{{ diet }}" id="diet-{{ loop.index }}"
+                                                       {% if diet in dietary_restrictions %}checked{% endif %}>
+                                                <label class="form-check-label" for="diet-{{ loop.index }}">
+                                                    {{ diet }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Change Password Tab -->
+                        <div class="tab-pane fade" id="change-password" role="tabpanel" aria-labelledby="password-tab">
+                            <form action="{{ url_for('change_password') }}" method="POST">
+                                <div class="mb-3">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="current_password" 
+                                           name="current_password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="new_password" 
+                                           name="new_password" required>
+                                    <div class="form-text">Password must be at least 8 characters long</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" 
+                                           name="confirm_password" required>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Change Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+    
+    // Form validation for password change
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordForm = document.querySelector('#change-password form');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(event) {
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+                
+                if (newPassword !== confirmPassword) {
+                    event.preventDefault();
+                    alert('New passwords do not match!');
+                }
+                
+                if (newPassword.length < 8) {
+                    event.preventDefault();
+                    alert('Password must be at least 8 characters long!');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

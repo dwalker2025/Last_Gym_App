@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Fitness App{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Welcome, {{ current_user.username }}!</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Summary Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Profile Summary</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-user-circle fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5 class="mb-0">{{ current_user.username }}</h5>
+                            <p class="text-muted mb-0">{{ current_user.email }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Weekly Availability:</strong> 
+                        <span>{{ current_user.availability or 0 }} hours</span>
+                    </div>
+                    
+                    {% if current_user.height and current_user.weight %}
+                    <div class="mb-3">
+                        <strong>Physical Stats:</strong>
+                        <div>Height: {{ current_user.height }} cm</div>
+                        <div>Weight: {{ current_user.weight }} kg</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Goals Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Fitness Goals</h4>
+                </div>
+                <div class="card-body">
+                    {% set user_goals = current_user.goals|default('[]')|from_json %}
+                    {% if user_goals %}
+                        <ul class="list-group list-group-flush">
+                            {% for goal in user_goals %}
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    {{ goal }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-flag fa-3x mb-3"></i>
+                            <p>No goals set yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-success">Update Goals</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Restrictions Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Health Restrictions</h4>
+                </div>
+                <div class="card-body">
+                    {% set user_restrictions = current_user.restrictions|default('{}')|from_json %}
+                    {% set injury_areas = user_restrictions.get('injury_areas', []) %}
+                    {% set limited_movements = user_restrictions.get('limited_movements', []) %}
+                    {% set dietary_restrictions = user_restrictions.get('dietary_restrictions', []) %}
+                    
+                    {% if injury_areas or limited_movements or dietary_restrictions %}
+                        {% if injury_areas %}
+                            <h6 class="mt-2">Injury Areas:</h6>
+                            <div class="mb-3">
+                                {% for area in injury_areas %}
+                                    <span class="badge bg-danger me-1 mb-1">{{ area }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        {% if limited_movements %}
+                            <h6 class="mt-2">Limited Movements:</h6>
+                            <div class="mb-3">
+                                {% for movement in limited_movements %}
+                                    <span class="badge bg-warning text-dark me-1 mb-1">{{ movement }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        {% if dietary_restrictions %}
+                            <h6 class="mt-2">Dietary Restrictions:</h6>
+                            <div class="mb-3">
+                                {% for diet in dietary_restrictions %}
+                                    <span class="badge bg-info text-dark me-1 mb-1">{{ diet }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                            <p>No restrictions added</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-info">Update Restrictions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional dashboard content could go here -->
+</div>
+{% endblock %}
