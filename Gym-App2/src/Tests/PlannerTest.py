@@ -1,7 +1,7 @@
 import unittest
-from edu import Planner, WK, STWK  # Assuming these classes exist in the `edu` module.
+import Planner
 
-class TestPlanner(unittest.TestCase):
+class PlannerTest(unittest.TestCase):
     def setUp(self):
         self.planner = Planner("John Doe")
         self.workout = WK("Weight Loss", "Running", 300, 30.5)
