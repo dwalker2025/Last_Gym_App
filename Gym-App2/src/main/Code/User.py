@@ -1,24 +1,53 @@
-class User:
-    """This is the main user class for our gym software"""
+import tkinter as tk
+from tkinter import messagebox
 
-    def __init__(self, height=0, weight=0):
-        self.height = height
-        self.weight = weight
-        self.avail = 0
-        self.limits = None
-        self.goals = []
+def submit():
+    name = name_entry.get()
+    height = height_entry.get()
+    weight = weight_entry.get()
+    goal = goal_var.get()
+    vegetarian = "Yes" if vegetarian_var.get() else "No"
+    restrictions = restrictions_entry.get()
 
-    def change_weight(self, new_weight):
-        self.weight = new_weight
+    info = f"Name: {name}\nHeight: {height} cm\nWeight: {weight} kg\nGoal: {goal}\nVegetarian: {vegetarian}\nRestrictions: {restrictions}"
+    messagebox.showinfo("User Info", info)
 
-    def change_height(self, new_height):
-        self.height = new_height
+# Create window
+root = tk.Tk()
+root.title("User Info Form")
+root.geometry("300x400")
 
-    def update_availability(self, new_avail):
-        self.avail = new_avail
+# Name
+tk.Label(root, text="Name").pack()
+name_entry = tk.Entry(root)
+name_entry.pack()
 
-    def get_height(self):
-        return self.height
+# Height
+tk.Label(root, text="Height (cm)").pack()
+height_entry = tk.Entry(root)
+height_entry.pack()
 
-    def get_weight(self):
-        return self.weight
+# Weight
+tk.Label(root, text="Weight (kg)").pack()
+weight_entry = tk.Entry(root)
+weight_entry.pack()
+
+# Goal
+tk.Label(root, text="Fitness Goal").pack()
+goal_var = tk.StringVar(value="Bulk")
+tk.Radiobutton(root, text="Bulk", variable=goal_var, value="Bulk").pack()
+tk.Radiobutton(root, text="Cut", variable=goal_var, value="Cut").pack()
+
+# Vegetarian
+vegetarian_var = tk.BooleanVar()
+tk.Checkbutton(root, text="Are you vegetarian?", variable=vegetarian_var).pack()
+
+# Restrictions
+tk.Label(root, text="Any dietary restrictions?").pack()
+restrictions_entry = tk.Entry(root)
+restrictions_entry.pack()
+
+# Submit Button
+tk.Button(root, text="Submit", command=submit).pack(pady=10)
+
+root.mainloop()
