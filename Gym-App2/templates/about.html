@@ -1,0 +1,77 @@
+<!-- templates/about.html -->
+{% extends "base.html" %}
+
+{% block title %}About | Gym App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card border-0 shadow">
+            <div class="card-body p-5">
+                <h1 class="display-5 fw-bold mb-4">About Gym App</h1>
+                <p class="lead">Gym App is your ultimate fitness companion, designed to help you track your workouts, monitor progress, and achieve your fitness goals.</p>
+
+                <hr class="my-4">
+
+                <h2 class="h3 mb-3">Our Mission</h2>
+                <p>We believe that everyone deserves access to tools that make fitness tracking simple and effective. Our mission is to provide an intuitive platform that helps you stay motivated and see real results in your fitness journey.</p>
+
+                <h2 class="h3 mb-3 mt-4">Features</h2>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-primary text-white p-3 rounded me-3">
+                                <i class="bi bi-journal-check"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5">Workout Logging</h3>
+                                <p class="text-muted">Record exercises, sets, reps, and weights with our easy-to-use interface.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-primary text-white p-3 rounded me-3">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5">Progress Tracking</h3>
+                                <p class="text-muted">Visualize your improvements with detailed charts and statistics.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-primary text-white p-3 rounded me-3">
+                                <i class="bi bi-calendar-week"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5">Workout Planning</h3>
+                                <p class="text-muted">Plan your workouts ahead of time and set schedules.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-primary text-white p-3 rounded me-3">
+                                <i class="bi bi-alarm"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5">Reminders</h3>
+                                <p class="text-muted">Never miss a workout with our customizable reminder system.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="h3 mb-3 mt-4">Get Started Today</h2>
+                <p>Join thousands of fitness enthusiasts who are already seeing results with Gym App.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-start mt-4">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                    <a href="{{ url_for('home') }}" class="btn btn-outline-secondary btn-lg">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
