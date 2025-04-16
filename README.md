@@ -17,6 +17,6 @@ The goal of this app is to help users **plan and log their workouts** easily.
 ---
 
 ## Sprint 2: Backend Progress  
-
+- Goal: UI without Logic
 - Most of the backend class work is finished  
 - A solid interface was built to interact with the backend  
