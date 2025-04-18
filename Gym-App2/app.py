@@ -1,13 +1,13 @@
 # app.py
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import os
-from werkzeug.security import generate_password_hash, check_password_hash
-import re
-from datetime import datetime, timedelta
-from functools import wraps
+from datetime import timedelta
+import json
+
+# Import models
+from models import db, User, Restriction
 
 # Create Flask app
 app = Flask(__name__)
@@ -19,7 +19,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_key_for_development
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # Session lasts for 7 days
 
 # Initialize extensions
-db = SQLAlchemy(app)
+db.init_app(app)  # Initialize db with app
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # Specify the login route
@@ -29,116 +29,6 @@ login_manager.login_message_category = 'info'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-
-# Define models
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    active = db.Column(db.Boolean, default=True)
-    last_login = db.Column(db.DateTime)
-    streak_days = db.Column(db.Integer, default=0)
-    current_weight = db.Column(db.Float)
-    target_weight = db.Column(db.Float)
-
-    # These properties are required by Flask-Login
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return self.active
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self.id)
-
-    def __init__(self, username, email, password):
-        self.username = username
-        self.email = email
-        self.set_password(password)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def update_streak(self):
-        """Update user streak when they log in"""
-        today = datetime.utcnow().date()
-
-        if self.last_login is None:
-            self.streak_days = 1
-        else:
-            last_login_date = self.last_login.date()
-
-            # If last login was yesterday, increment streak
-            if (today - last_login_date).days == 1:
-                self.streak_days += 1
-            # If last login was today, keep streak
-            elif (today - last_login_date).days == 0:
-                pass
-            # If last login was more than 1 day ago, reset streak
-            else:
-                self.streak_days = 1
-
-        self.last_login = datetime.utcnow()
-
-    @staticmethod
-    def is_valid_email(email):
-        """Validate email format - checks for @ symbol and domain"""
-        if not email:
-            return False
-
-        # Basic pattern: something@something.something
-        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return bool(re.match(pattern, email))
-
-    @staticmethod
-    def is_valid_password(password):
-        """
-        Validate password strength
-        - At least 8 characters long
-        """
-        if not password or len(password) < 8:
-            return False
-        return True
-
-    @classmethod
-    def create_user(cls, username, email, password):
-        """
-        Create a new user with validation
-        Returns (user, error_message)
-        """
-        # Validate email
-        if not cls.is_valid_email(email):
-            return None, "Invalid email format"
-
-        # Check if email already exists
-        if cls.query.filter_by(email=email).first():
-            return None, "Email already registered"
-
-        # Check if username already exists
-        if cls.query.filter_by(username=username).first():
-            return None, "Username already taken"
-
-        # Validate password
-        if not cls.is_valid_password(password):
-            return None, "Password must be at least 8 characters long"
-
-        # Create new user
-        user = cls(username=username, email=email, password=password)
-        return user, None
 
 
 # Web UI Routes
@@ -165,7 +55,7 @@ def register():
             return render_template('register.html')
 
         # Create user
-        user, error = User.create_user(username, email, password)
+        user, error = User.create_user(username=username, email=email, password=password)
 
         if error:
             flash(error, 'danger')
@@ -234,7 +124,7 @@ def dashboard():
         'active_users': User.query.filter_by(active=True).count(),
         'recent_joins': User.query.order_by(User.created_at.desc()).limit(5).all(),
         'streak_days': current_user.streak_days,
-        'current_weight': current_user.current_weight,
+        'current_weight': current_user.weight,
         'target_weight': current_user.target_weight,
         'weight_change': 0  # You'll calculate this based on weight history later
     }
@@ -245,6 +135,34 @@ def dashboard():
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
+
+
+@app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    if request.method == 'POST':
+        # Update user profile data
+        current_user.username = request.form.get('username', current_user.username)
+
+        # Update physical attributes
+        if request.form.get('height'):
+            current_user.height = int(request.form.get('height'))
+        if request.form.get('weight'):
+            current_user.weight = int(request.form.get('weight'))
+        if request.form.get('target_weight'):
+            current_user.target_weight = float(request.form.get('target_weight'))
+
+        # Update goals if provided
+        if request.form.get('goals'):
+            goals = request.form.get('goals').split(',')
+            current_user.goals = json.dumps([goal.strip() for goal in goals])
+
+        # Save changes
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+
+    return render_template('edit_profile.html', user=current_user)
 
 
 @app.route('/about')
@@ -282,7 +200,23 @@ def create_user():
     email = data.get('email')
     password = data.get('password')
 
-    user, error = User.create_user(username, email, password)
+    # Optional parameters
+    height = data.get('height')
+    weight = data.get('weight')
+    target_weight = data.get('target_weight')
+    availability = data.get('availability')
+    goals = data.get('goals')
+
+    user, error = User.create_user(
+        username=username,
+        email=email,
+        password=password,
+        height=height,
+        weight=weight,
+        availability=availability,
+        goals=goals,
+        target_weight=target_weight
+    )
 
     if error:
         return jsonify({"error": error}), 400
@@ -327,6 +261,18 @@ def update_user(user_id):
             return jsonify({"error": "Password must be at least 8 characters long"}), 400
         user.set_password(data['password'])
 
+    if 'height' in data:
+        user.height = data['height']
+
+    if 'weight' in data:
+        user.weight = data['weight']
+
+    if 'target_weight' in data:
+        user.target_weight = data['target_weight']
+
+    if 'goals' in data:
+        user.goals = json.dumps(data['goals'])
+
     if 'active' in data and isinstance(data['active'], bool):
         user.active = data['active']
 
@@ -351,4 +297,7 @@ def delete_user(user_id):
 
 
 if __name__ == '__main__':
+    with app.app_context():
+        # Create tables if they don't exist
+        db.create_all()
     app.run(debug=True)
