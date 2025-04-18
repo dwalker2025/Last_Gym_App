@@ -1,28 +1,37 @@
 import unittest
-from edu import User
+from user import format_user_info
 
-class TestUser(unittest.TestCase):
-    def setUp(self):
-        self.user = User(70, 150)
-        self.user.goals = []  # Equivalent to Java's `new ArrayList<>()`
+class TestUserInfo(unittest.TestCase):
 
-    def test_change_weight(self):
-        self.user.changeWeight(180)
-        self.assertEqual(self.user.weight, 180)
+    def test_format_user_info_vegetarian(self):
+        result = format_user_info(
+            name="Garen",
+            height="195",
+            weight="85",
+            goal="Bulk",
+            vegetarian=True,
+            restrictions="None"
+        )
+        expected = (
+            "Name: Garen\nHeight: 195 cm\nWeight: 85 kg\n"
+            "Goal: Bulk\nVegetarian: Yes\nRestrictions: None"
+        )
+        self.assertEqual(result, expected)
 
-        self.user.changeWeight(200)
-        self.assertEqual(self.user.weight, 200)
+    def test_format_user_info_non_vegetarian_with_restrictions(self):
+        result = format_user_info(
+            name="Renn",
+            height="180",
+            weight="75",
+            goal="Cut",
+            vegetarian=False,
+            restrictions="Lactose intolerant"
+        )
+        expected = (
+            "Name: Renn\nHeight: 180 cm\nWeight: 75 kg\n"
+            "Goal: Cut\nVegetarian: No\nRestrictions: Lactose intolerant"
+        )
+        self.assertEqual(result, expected)
 
-    def test_change_height(self):
-        self.user.changeHeight(75)
-        self.assertEqual(self.user.height, 75)
-
-        self.user.changeHeight(80)
-        self.assertEqual(self.user.height, 80)
-
-    def test_update_availability(self):
-        self.user.updateAvailability(5)
-        self.assertEqual(self.user.avail, 5)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
