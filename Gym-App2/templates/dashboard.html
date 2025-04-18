@@ -17,11 +17,11 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Total Users</h6>
-                        <h2 class="card-title mb-0">{{ stats.total_users }}</h2>
+                        <h6 class="card-subtitle mb-2 text-white-50">Hot Streak</h6>
+                        <h2 class="card-title mb-0">{{ stats.streak_days|default('0') }} days</h2>
                     </div>
                     <div class="bg-white rounded-circle p-3">
-                        <i class="bi bi-people fs-4 text-primary"></i>
+                        <i class="bi bi-fire fs-4 text-primary"></i>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-8 mb-4">
+    <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header bg-white">
                 <h5 class="card-title mb-0">Workout Activity</h5>
@@ -76,7 +76,26 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Progress Tracker</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    This chart will display your weight loss progress and activity levels over time.
+                </div>
+                <div class="d-flex align-items-center justify-content-center" style="height: 250px;">
+                    <p class="text-muted">Start tracking your weight and activity to see progress here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mb-4">
         <div class="card h-100">
             <div class="card-header bg-white">
                 <h5 class="card-title mb-0">Recent Users</h5>
@@ -99,6 +118,32 @@
                         <p class="text-muted">No users available</p>
                     </div>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Health Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Current Weight</span>
+                    <span class="fw-bold">{{ stats.current_weight|default('Not set') }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Target Weight</span>
+                    <span class="fw-bold">{{ stats.target_weight|default('Not set') }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Weight Change</span>
+                    <span class="fw-bold {{ 'text-success' if stats.weight_change and stats.weight_change < 0 else 'text-danger' if stats.weight_change and stats.weight_change > 0 else '' }}">
+                        {{ stats.weight_change|default('0') }} lbs
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Update Stats</a>
+                </div>
             </div>
         </div>
     </div>
