@@ -1,11 +1,12 @@
 import unittest
-from edu import WK, STWK  # Assuming these classes exist in the `edu` module.
+import WK
+import STWK
 
 class TestWK(unittest.TestCase):
     def setUp(self):
         # Initialize default instances before each test
-        self.workout = WK("Weight Loss", "Running", 300, 30.5)
-        self.strengthWorkout = STWK("Gaining Weight", "Bench Press", 150, 45.0, 3, 10, 135)
+        self.workout = WK.WK("Weight Loss", "Running", 300, 30.5)
+        #self.strengthWorkout = STWK.STWK("Gaining Weight", "Bench Press", 150, 45.0, 3, 10, 135)
 
     # Tests for WK class
     def test_WK_constructor_and_getters(self):
