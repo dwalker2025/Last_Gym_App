@@ -1,0 +1,53 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}Home | Gym App{% endblock %}
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-4 fw-bold">Welcome to Gym App</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Track your workouts, monitor your progress, and achieve your fitness goals with our state-of-the-art gym application.</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4 gap-3">Go to Dashboard</a>
+            <a href="#" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 py-5">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <i class="bi bi-calendar-check fs-4"></i>
+                </div>
+                <h3 class="card-title h5">Track Workouts</h3>
+                <p class="card-text">Log your exercises, sets, reps, and weights to keep a detailed record of your training sessions.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <i class="bi bi-graph-up fs-4"></i>
+                </div>
+                <h3 class="card-title h5">Monitor Progress</h3>
+                <p class="card-text">Visualize your improvements with charts and statistics to stay motivated on your fitness journey.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <i class="bi bi-trophy fs-4"></i>
+                </div>
+                <h3 class="card-title h5">Achieve Goals</h3>
+                <p class="card-text">Set personal targets and receive notifications when you reach new milestones in your fitness journey.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
