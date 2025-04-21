@@ -8,6 +8,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from datetime import datetime, timedelta
 from functools import wraps
+import requests
+import base64
+import os
+from dotenv import load_dotenv
 
 # Create Flask app
 app = Flask(__name__)
@@ -348,6 +352,50 @@ def delete_user(user_id):
     db.session.commit()
 
     return jsonify({"message": f"User {user_id} deleted successfully"})
+
+load_dotenv()
+
+CLIENT_ID = os.getenv('FATSECRET_CLIENT_ID')
+CLIENT_SECRET = os.getenv('FATSECRET_CLIENT_SECRET')
+TOKEN_URL = 'https://oauth.fatsecret.com/connect/token'
+API_URL = 'https://platform.fatsecret.com/rest/server.api'
+
+def get_access_token():
+    # Prepare basic auth
+    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+    headers = {
+        "Authorization": f"Basic {encoded_credentials}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    data = {
+        "grant_type": "client_credentials",
+        "scope": "basic"
+    }
+
+    response = requests.post(TOKEN_URL, headers=headers, data=data)
+    return response.json().get("access_token")
+
+
+@app.route('/search/<query>')
+def search_food(query):
+    access_token = get_access_token()
+    
+    params = {
+        "method": "foods.search",
+        "search_expression": query,
+        "format": "json"
+    }
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = requests.get(API_URL, headers=headers, params=params)
+    print(response)
+    return jsonify(response.json())
 
 
 if __name__ == '__main__':
