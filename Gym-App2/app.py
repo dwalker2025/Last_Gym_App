@@ -5,6 +5,9 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 import os
 from datetime import timedelta
 import json
+from dotenv import load_dotenv
+import base64
+import requests
 
 # Import models
 from models import db, User, Restriction
