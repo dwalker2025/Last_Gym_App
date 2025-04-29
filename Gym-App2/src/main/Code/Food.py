@@ -1,3 +1,5 @@
+
+#When creating the FOod class, you must have the name, colries, and if it is vegan, otherwise the rest will auto fill to false
 class Food:
     def __init__(self, name, calories, isVegan, isVegatarian=None, isNut=False, isShellfish=False, isSoy=False, isDairy=False, isWheat=False, isBulking=False):
         self.name = name

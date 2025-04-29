@@ -1,3 +1,4 @@
+#workout class that holds all of its information, all variables are required to create
 class WK:
     def __init__(self, type, name, calories, time_needed):
         self.type = type  # e.g., "Weight Loss" or "Gaining Weight"

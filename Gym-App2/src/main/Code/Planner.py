@@ -1,3 +1,4 @@
+#Creates the plans for all the code, including creating the weeks of food and workouts, also measures body progress and history of weeks are logged here
 class Planner:
     def __init__(self, user, map, workouts, diet, current_week, history):
         self.user=user #creates the user to be planned for
@@ -14,6 +15,7 @@ class Planner:
     def getWK(self):
         return self.workouts
     
+    #Creates a super simple testing calendar
     def showCalendar(self):
         if self.workouts and self.diet:
             self.map.append([self.workouts[0],self.diet[0]])
@@ -22,13 +24,14 @@ class Planner:
             self.map.append(["Salmon","Burpees"])
             return self.map
 
+#Logs the state of the week, current body height and weight, and resets the weeks food and workouts
     def log_state(self):
        this_week=[self.user.get_height(),self.user.get_weight()]
        self.body_history.append(this_week)
        self.workouts=[]
        self.food=[]
 
-
+#WIP to make the map of the body, will be finnished soon
     def make_map(self):
         
         pass
