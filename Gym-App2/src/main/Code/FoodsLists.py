@@ -1,6 +1,6 @@
 from Food import Food
 
-
+#Class mostly made for testing, this is the fallback for if our API doesn't cooperate, categorized based on the ways we'll categorize food
 class FoodsList:
     def __init__(self):
         self.foods = [

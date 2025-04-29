@@ -1,3 +1,5 @@
+#details things like food allergies and edits them (as food allergie can change over time!)
+
 class Restriction:
     def __init__(self, is_vegan, is_vegetarian, allergies):
         self.is_vegan = is_vegan

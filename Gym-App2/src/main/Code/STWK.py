@@ -1,3 +1,4 @@
+#Returns strength training workouts, subset of normal workouts, just includes sets and reps
 import WK
 class STWK(WK):
     def __init__(self, type, name, calories, time_needed, sets, reps, weight):
