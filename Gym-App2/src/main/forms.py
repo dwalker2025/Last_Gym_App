@@ -143,3 +143,10 @@ class ResetPasswordForm(FlaskForm):
         EqualTo('password', message="Passwords must match")
     ])
     submit = SubmitField('Reset Password')
+
+class SearchForm(FlaskForm):
+    """User login form"""
+    search = StringField('search', validators=[
+        DataRequired(message="search is required")
+    ])
+    submit = SubmitField('Search')

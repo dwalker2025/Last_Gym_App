@@ -10,7 +10,7 @@ import base64
 import requests
 
 # Import models
-from models import db, User, Restriction
+from models import db, User, Restriction, Response
 
 # Create Flask app
 app = Flask(__name__)
@@ -132,6 +132,29 @@ def dashboard():
         'weight_change': 0  # You'll calculate this based on weight history later
     }
     return render_template('dashboard.html', stats=stats)
+
+
+@app.route('/foodDisplay',methods=['GET', 'POST'])
+@login_required
+def food_display():
+    
+    if request.method == 'POST':
+        # Get form data
+        search = request.form.get('foodSearch')
+        current_response = Response.query.filter((Response.search == search)).first()
+        data = current_response
+        if (data == None):
+            data = internal_search_food(query=search)
+            newResponse = Response(search = search, last_searched =Response.get_time(), returned_data = data)
+            db.session.add(newResponse)
+            db.session.commit()
+        else:
+            data = data.get_data()
+        #print(type(foodList))
+        #print(foodList['foods']['food'])
+        return render_template('foodDisplay.html', foodList=data)
+    else:
+        return render_template('foodDisplay.html', foodList={})
 
 
 @app.route('/profile')
@@ -339,8 +362,25 @@ def search_food(query):
     }
 
     response = requests.get(API_URL, headers=headers, params=params)
-    print(response)
+    #print(response)
     return jsonify(response.json())
+
+def internal_search_food(query):
+    access_token = get_access_token()
+    
+    params = {
+        "method": "foods.search",
+        "search_expression": query,
+        "format": "json"
+    }
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = requests.get(API_URL, headers=headers, params=params)
+    #print(response)
+    return response.json()
 
 
 if __name__ == '__main__':
