@@ -17,12 +17,27 @@ class Planner:
     
     #Creates a super simple testing calendar
     def showCalendar(self):
+        if self.workout.length >= 7 and self.diet.length >= 7:
+            for i in range(7):
+                self.map.append([self.workouts[i],self.diet[i]])
+                return self.map
         if self.workouts and self.diet:
             self.map.append([self.workouts[0],self.diet[0]])
             return self.map
         else:
-            self.map.append(["Salmon","Burpees"])
+            self.generic_map()
             return self.map
+
+
+    def generic_map(self):
+        self.map.append(["Burpees","Salmon"])
+        self.map.append(["Push-ups","Steak"])
+        self.map.append(["Weights","Chicken Alfredo"])
+        self.map.append(["Jumping Jacks","Shrimp"])
+        self.map.append(["Crunches","Calamari"])
+        self.map.append(["Break day","Mystery Meat"])
+        self.map.append(["Climbing Wall","Lamb"])
+        
 
 #Logs the state of the week, current body height and weight, and resets the weeks food and workouts
     def log_state(self):
