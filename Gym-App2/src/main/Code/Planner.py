@@ -17,14 +17,6 @@ class Planner:
     
     #Creates a super simple testing calendar
     def showCalendar(self):
-        if self.workout.length >= 7 and self.diet.length >= 7:
-            for i in range(7):
-                self.map.append([self.workouts[i],self.diet[i]])
-                return self.map
-        if self.workouts and self.diet:
-            self.map.append([self.workouts[0],self.diet[0]])
-            return self.map
-        else:
             self.generic_map()
             return self.map
 
