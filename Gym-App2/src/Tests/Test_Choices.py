@@ -1,8 +1,10 @@
+#Add the files from themain code into test folder to test these
 import unittest
 import WK
 import STWK
 import Food
 
+#Creating a workout and food with parameters
 class TestWK(unittest.TestCase):
     def setUp(self):
         # Initialize default instances before each test
@@ -10,13 +12,14 @@ class TestWK(unittest.TestCase):
         #self.strengthWorkout = STWK("Gaining Weight", "Bench Press", 150, 45.0, 3, 10, 135)
         self.food= Food.Food("Pasta",400,False,True)
 
-    # Tests for WK class
+    # Testing that our WK is correctly made
     def test_WK_constructor_and_getters(self):
         self.assertEqual(self.workout.get_type(), "Weight Loss", "Type should match constructor input")
         self.assertEqual(self.workout.get_name(), "Running", "Name should match constructor input")
         self.assertEqual(self.workout.get_calories(), 300, "Calories should match constructor input")
         self.assertAlmostEqual(self.workout.get_time_needed(), 30.5, places=3, msg="TimeNeeded should match constructor input")
 
+#Testing that the workout can be set and change correctly
     def test_WK_setters(self):
         self.workout.set_type("Gaining Weight")
         self.workout.set_name("Bench Press")
@@ -28,6 +31,7 @@ class TestWK(unittest.TestCase):
         self.assertEqual(self.workout.get_calories(), 150, "Calories should update after setCalories")
         self.assertAlmostEqual(self.workout.get_time_needed(), 45.0, places=3, msg="TimeNeeded should update after setTimeNeeded")
 
+    #simple conversion tests
     def test_WK_to_string(self):
         expected = "Workout{type='Weight Loss', name='Running', calories=300, timeNeeded=30.5 minutes}"
         self.assertEqual(str(self.workout), expected, "toString should match expected format")
@@ -40,7 +44,7 @@ class TestWK(unittest.TestCase):
         zero_time_workout = WK.WK("Gaining Weight", "Stretching", 50, 0.0)
         self.assertAlmostEqual(zero_time_workout.get_time_needed(), 0.0, places=3, msg="TimeNeeded should be 0.0")
 
-    # Tests for STWK class
+    # Tests for STWK class, abandoned
     """def test_STWK_constructor_and_getters(self):
         self.assertEqual(self.strengthWorkout.get_type(), "Gaining Weight", "Type should match constructor input")
         self.assertEqual(self.strengthWorkout.get_name(), "Bench Press", "Name should match constructor input")

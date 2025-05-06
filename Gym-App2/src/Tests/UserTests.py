@@ -1,8 +1,10 @@
 import unittest
+#paste the user class into the test class to test this
 from user import format_user_info
 
 class TestUserInfo(unittest.TestCase):
 
+#creating a vegetarian
     def test_format_user_info_vegetarian(self):
         result = format_user_info(
             name="Garen",
@@ -18,6 +20,7 @@ class TestUserInfo(unittest.TestCase):
         )
         self.assertEqual(result, expected)
 
+    #Creatign a non-vegetarian that can't have milk
     def test_format_user_info_non_vegetarian_with_restrictions(self):
         result = format_user_info(
             name="Renn",

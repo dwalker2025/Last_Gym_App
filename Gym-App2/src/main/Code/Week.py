@@ -5,3 +5,9 @@
 class Week:
     def __init__(self, choices_list):
         self.choices = choices_list
+
+    def get_week(self):
+        return self.choices
+    
+    def add_to_week(self,object):
+        self.choice.append(object)

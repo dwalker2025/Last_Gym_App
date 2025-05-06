@@ -23,4 +23,5 @@ The goal of this app is to help users **plan and log their workouts** easily.
 - **Sprint Review/Demo Doc** https://docs.google.com/document/d/1L8QqHMreCVflItChyH4Oc4BBTfYjY3QjKSlkxQdS48M/edit?usp=sharing 
 - **Class Diagrams** https://app.diagrams.net/#G1t_KkjhLRLOMoe-dBG87n9MdTVRwtAyHr#%7B%22pageId%22%3A%22lZCz2yDrK2QZgYUH8SCL%22%7D
 - **Retrospective** https://docs.google.com/document/d/1Vhc3hZqLiRo0MRhNWN3_542GV4vE4GgE0ZcBiQ86Om8/edit?usp=sharing
+- **Trello Board:** [Track progress] (https://trello.com/b/QxrryKLH/gym-tracker-app)
 

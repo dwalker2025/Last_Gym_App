@@ -1,6 +1,8 @@
+#User class, adapted to br used in FLask
 import tkinter as tk
 from tkinter import messagebox
 
+#Creates the user
 def submit():
     name = name_entry.get()
     height = height_entry.get()
