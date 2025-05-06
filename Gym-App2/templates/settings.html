@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings | Gym App{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Account Settings</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="true">
+                                <i class="bi bi-lock"></i> Password
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab" aria-controls="notifications" aria-selected="false">
+                                <i class="bi bi-bell"></i> Notifications
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="privacy-tab" data-bs-toggle="tab" data-bs-target="#privacy" type="button" role="tab" aria-controls="privacy" aria-selected="false">
+                                <i class="bi bi-shield-lock"></i> Privacy
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="settingsTabsContent">
+                        <!-- Password Tab -->
+                        <div class="tab-pane fade show active" id="password" role="tabpanel" aria-labelledby="password-tab">
+                            <h4 class="mb-4">Change Password</h4>
+                            <form method="POST" action="{{ url_for('settings') }}">
+                                <div class="mb-3">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">New Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                    </div>
+                                    <div class="form-text">Password must be at least 8 characters long.</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Update Password
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Notifications Tab -->
+                        <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+                            <h4 class="mb-4">Notification Preferences</h4>
+                            <form>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="email_notifications" checked>
+                                    <label class="form-check-label" for="email_notifications">Email Notifications</label>
+                                    <div class="form-text">Receive workout reminders and progress updates via email.</div>
+                                </div>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="push_notifications" checked>
+                                    <label class="form-check-label" for="push_notifications">Push Notifications</label>
+                                    <div class="form-text">Allow browser push notifications for workout reminders.</div>
+                                </div>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="weekly_summary" checked>
+                                    <label class="form-check-label" for="weekly_summary">Weekly Summary</label>
+                                    <div class="form-text">Receive a weekly summary of your workouts and progress.</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="reminder_time" class="form-label">Workout Reminder Time</label>
+                                    <input type="time" class="form-control" id="reminder_time" value="18:00">
+                                    <div class="form-text">Set the time when you'd like to receive workout reminders.</div>
+                                </div>
+                                <button type="button" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Save Notification Settings
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Privacy Tab -->
+                        <div class="tab-pane fade" id="privacy" role="tabpanel" aria-labelledby="privacy-tab">
+                            <h4 class="mb-4">Privacy Settings</h4>
+                            <form>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="profile_public" checked>
+                                    <label class="form-check-label" for="profile_public">Public Profile</label>
+                                    <div class="form-text">Allow other users to view your profile and progress.</div>
+                                </div>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="workout_sharing" checked>
+                                    <label class="form-check-label" for="workout_sharing">Workout Sharing</label>
+                                    <div class="form-text">Allow your workouts to be shared on the community feed.</div>
+                                </div>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="anonymous_analytics">
+                                    <label class="form-check-label" for="anonymous_analytics">Anonymous Analytics</label>
+                                    <div class="form-text">Share anonymous workout data to help improve the app.</div>
+                                </div>
+                                <div class="mb-4 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="data_download">
+                                    <label class="form-check-label" for="data_download">Data Download</label>
+                                    <div class="form-text">Request a download of all your data from the app.</div>
+                                </div>
+                                <button type="button" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Save Privacy Settings
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Danger Zone -->
+            <div class="card shadow mt-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">Danger Zone</h5>
+                </div>
+                <div class="card-body">
+                    <h5>Delete Account</h5>
+                    <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="bi bi-exclamation-triangle"></i> Delete My Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-bold">Are you absolutely sure you want to delete your account?</p>
+                <p>This action cannot be undone. All your data, including workout history, meal plans, and progress tracking will be permanently deleted.</p>
+                <div class="mb-3">
+                    <label for="password_confirm" class="form-label">To confirm, please enter your password:</label>
+                    <input type="password" class="form-control" id="password_confirm">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete Account Permanently
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

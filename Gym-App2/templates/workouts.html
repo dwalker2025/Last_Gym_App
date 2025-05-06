@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Workout Preferences{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h3 mb-0">Workout Preferences</h1>
+            </div>
+            <div class="card-body">
+                <p class="lead mb-4">Tell us about your workout preferences and any physical limitations so we can recommend the best workout plan for you.</p>
+                
+                <form action="{{ url_for('workouts') }}" method="post">
+                    <!-- Fitness Goals Section -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2 mb-3">Fitness Goals</h4>
+                        <div class="mb-3">
+                            <label for="fitness_goal" class="form-label">What's your primary fitness goal?</label>
+                            <select class="form-select" id="fitness_goal" name="fitness_goal" required>
+                                <option value="" disabled selected>Choose your goal...</option>
+                                {% for goal in fitness_goals %}
+                                <option value="{{ goal }}" {% if current_user.fitness_goal == goal %}selected{% endif %}>
+                                    {{ goal|capitalize }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">This helps us recommend exercises that align with your goals.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Experience Level Section -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2 mb-3">Experience Level</h4>
+                        <div class="mb-3">
+                            <label for="workout_experience" class="form-label">What's your fitness experience level?</label>
+                            <select class="form-select" id="workout_experience" name="workout_experience" required>
+                                <option value="" disabled selected>Choose your level...</option>
+                                {% for level in experience_levels %}
+                                <option value="{{ level }}" {% if current_user.workout_experience == level %}selected{% endif %}>
+                                    {{ level|capitalize }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">This helps us recommend appropriate exercise intensity.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Workout Schedule Section -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2 mb-3">Workout Schedule</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="workout_days_per_week" class="form-label">How many days per week can you workout?</label>
+                                <input type="number" class="form-control" id="workout_days_per_week" name="workout_days_per_week" 
+                                       min="1" max="7" value="{{ current_user.workout_days_per_week or 3 }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="workout_duration" class="form-label">Preferred workout duration (minutes)</label>
+                                <input type="number" class="form-control" id="workout_duration" name="workout_duration" 
+                                       min="15" max="120" step="5" value="{{ current_user.workout_duration or 45 }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Physical Limitations Section -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2 mb-3">Physical Limitations</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Do you have any injuries or physical limitations?</label>
+                            <div class="form-text mb-2">Select all body parts that have limitations or injuries</div>
+                            
+                            <div class="row">
+                                {% for body_part in body_parts %}
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="injury_areas" 
+                                               id="injury-{{ body_part }}" value="{{ body_part }}"
+                                               {% if body_part in current_injuries %}checked{% endif %}>
+                                        <label class="form-check-label" for="injury-{{ body_part }}">
+                                            {{ body_part|capitalize }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="limited_movements" class="form-label">Are there any specific movements you can't perform?</label>
+                            <textarea class="form-control" id="limited_movements" name="limited_movements" rows="2" 
+                                      placeholder="e.g., squats, push-ups, overhead press (comma separated)">{{ current_movements|join(', ') if current_movements else '' }}</textarea>
+                            <div class="form-text">List any movements that cause pain or discomfort, separated by commas.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Equipment Access Section -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2 mb-3">Equipment Access</h4>
+                        <div class="mb-3">
+                            <label class="form-label">What equipment do you have access to?</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="equipment_access" id="equipment-gym" value="gym" 
+                                       {% if current_user.equipment_access == 'gym' %}checked{% endif %} checked>
+                                <label class="form-check-label" for="equipment-gym">
+                                    Full gym access
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="equipment_access" id="equipment-limited" value="limited" 
+                                       {% if current_user.equipment_access == 'limited' %}checked{% endif %}>
+                                <label class="form-check-label" for="equipment-limited">
+                                    Limited equipment (dumbbells, resistance bands, etc.)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="equipment_access" id="equipment-none" value="none" 
+                                       {% if current_user.equipment_access == 'none' %}checked{% endif %}>
+                                <label class="form-check-label" for="equipment-none">
+                                    No equipment (bodyweight only)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check2-circle"></i> Save Preferences & Generate Workout Plan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

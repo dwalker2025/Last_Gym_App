@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Calendar | Gym App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.css">
+<style>
+    .fc-event {
+        cursor: pointer;
+    }
+    .fc-workout-event {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+    }
+    .fc-meal-event {
+        background-color: #2196F3;
+        border-color: #2196F3;
+    }
+    .calendar-filters {
+        margin-bottom: 20px;
+    }
+    .calendar-filters .btn-group {
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Your Calendar</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="calendar-filters">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary" id="month-view">Month</button>
+                        <button type="button" class="btn btn-outline-primary" id="week-view">Week</button>
+                        <button type="button" class="btn btn-outline-primary" id="day-view">Day</button>
+                    </div>
+                </div>
+                
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Details Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="eventModalBody">
+                <!-- Event details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="eventDetailsLink">View Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: [
+                {% for date, events in calendar_data.items() %}
+                    {% for event in events %}
+                        {
+                            title: '{{ event.title }}',
+                            start: '{{ date }}T{{ event.time if event.time else "08:00:00" }}',
+                            allDay: {% if event.time %}false{% else %}true{% endif %},
+                            extendedProps: {
+                                type: '{{ event.type }}',
+                                description: '{{ event.description }}',
+                                url: '{{ event.url }}',
+                                id: '{{ event.id }}'
+                            },
+                            className: 'fc-{{ event.type }}-event'
+                        },
+                    {% endfor %}
+                {% endfor %}
+            ],
+            eventClick: function(info) {
+                // Display event details in modal
+                var modal = document.getElementById('eventModal');
+                var modalBody = document.getElementById('eventModalBody');
+                var eventDetailsLink = document.getElementById('eventDetailsLink');
+                
+                // Set modal title
+                document.getElementById('eventModalLabel').textContent = info.event.title;
+                
+                // Set modal body content
+                var content = '<p><strong>Type:</strong> ' + info.event.extendedProps.type.charAt(0).toUpperCase() + info.event.extendedProps.type.slice(1) + '</p>';
+                content += '<p><strong>Description:</strong> ' + info.event.extendedProps.description + '</p>';
+                modalBody.innerHTML = content;
+                
+                // Set the details link
+                eventDetailsLink.href = info.event.extendedProps.url;
+                
+                // Show the modal
+                var bsModal = new bootstrap.Modal(modal);
+                bsModal.show();
+            }
+        });
+        
+        calendar.render();
+        
+        // View buttons
+        document.getElementById('month-view').addEventListener('click', function() {
+            calendar.changeView('dayGridMonth');
+        });
+        
+        document.getElementById('week-view').addEventListener('click', function() {
+            calendar.changeView('timeGridWeek');
+        });
+        
+        document.getElementById('day-view').addEventListener('click', function() {
+            calendar.changeView('timeGridDay');
+        });
+    });
+</script>
+{% endblock %}

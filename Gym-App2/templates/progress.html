@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Your Progress | Gym App{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js for progress charts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .progress-card {
+        transition: transform 0.3s;
+    }
+    .progress-card:hover {
+        transform: translateY(-5px);
+    }
+    .chart-container {
+        position: relative;
+        height: 50vh;
+        width: 100%;
+    }
+    .stats-card {
+        height: 100%;
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .download-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Your Progress</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Date Range</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-range"></i></span>
+                                <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button id="update-chart" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Share Your Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" placeholder="Enter email address">
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary"><i class="bi bi-share"></i> Share</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Workout Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="position-relative">
+                        <div class="dropdown download-btn">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="downloadDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-download"></i> Download
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="downloadDropdown">
+                                <li><a class="dropdown-item" href="#" id="download-png">PNG Image</a></li>
+                                <li><a class="dropdown-item" href="#" id="download-pdf">PDF Document</a></li>
+                                <li><a class="dropdown-item" href="#" id="download-csv">CSV Data</a></li>
+                            </ul>
+                        </div>
+                        <canvas id="workoutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm stats-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Your Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col text-center">
+                            <h5>Current Weight</h5>
+                            <div class="stat-value">{{ weight_data.current }} Ibs</div>
+                        </div>
+                        <div class="col text-center">
+                            <h5>Target Weight</h5>
+                            <div class="stat-value">{{ weight_data.target }} Ibs</div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col text-center">
+                            <h5>Workouts Completed</h5>
+                            <div class="stat-value">{{ workout_stats.total_workouts }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-center">
+                            <h5>Current Streak</h5>
+                            <div class="stat-value">{{ current_user.streak_days }} days</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Weight Tracker</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Workout Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="workoutDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Monthly Calendar</h5>
+                </div>
+                <div class="card-body">
+                    <div id="calendar" class="fc fc-media-screen fc-direction-ltr fc-theme-bootstrap">
+                        <!-- Calendar will be rendered here -->
+                        <p class="text-center mb-3">
+                            <a href="{{ url_for('calendar') }}" class="btn btn-primary">
+                                <i class="bi bi-calendar-week"></i> Go to Full Calendar
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js for creating charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Moment.js for date handling -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+<!-- Flatpickr for date range picker -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Date range picker
+        const dateRangePicker = flatpickr('#date-range-picker', {
+            mode: 'range',
+            dateFormat: 'Y-m-d',
+            defaultDate: [
+                moment().subtract(30, 'days').format('YYYY-MM-DD'),
+                moment().format('YYYY-MM-DD')
+            ],
+            maxDate: 'today'
+        });
+
+        // Workout chart
+        const workoutCtx = document.getElementById('workoutChart').getContext('2d');
+        const workoutChart = new Chart(workoutCtx, {
+            type: 'bar',
+            data: {
+                labels: generateDateLabels(30),
+                datasets: [{
+                    label: 'Workouts Completed',
+                    data: generateRandomData(30, 0, 2),
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Weight chart
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        const weightChart = new Chart(weightCtx, {
+            type: 'line',
+            data: {
+                labels: generateDateLabels(12, 'weeks'),
+                datasets: [{
+                    label: 'Weight (Ibs)',
+                    data: generateWeightData(12, {{ weight_data.current }}, {{ weight_data.target }}),
+                    fill: false,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    tension: 0.2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Workout distribution chart
+        const distributionCtx = document.getElementById('workoutDistributionChart').getContext('2d');
+        const distributionChart = new Chart(distributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Strength', 'Cardio', 'Flexibility', 'HIIT'],
+                datasets: [{
+                    data: [12, 8, 3, 5],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Download chart as PNG
+        document.getElementById('download-png').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.href = workoutChart.toBase64Image();
+            link.download = 'workout-progress.png';
+            link.click();
+        });
+
+        // Helper functions
+        function generateDateLabels(days, unit = 'days') {
+            const labels = [];
+            for (let i = days - 1; i >= 0; i--) {
+                labels.push(moment().subtract(i, unit).format('MMM D'));
+            }
+            return labels;
+        }
+
+        function generateRandomData(count, min, max) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+            }
+            return data;
+        }
+
+        function generateWeightData(count, current, target) {
+            const data = [];
+            const start = current + Math.random() * 5;
+            const step = (current - target) / count;
+
+            for (let i = 0; i < count; i++) {
+                const trend = start - (step * i);
+                const randomVariation = (Math.random() - 0.5) * 2;
+                data.push(parseFloat((trend + randomVariation).toFixed(1)));
+            }
+            return data;
+        }
+    });
+</script>
+{% endblock %}

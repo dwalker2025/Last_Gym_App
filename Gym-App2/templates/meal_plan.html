@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Your Meal Plan{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-4">Your Personalized Meal Plan</h1>
+        <p class="lead">Based on your dietary preferences and fitness goals, here's a meal plan tailored just for you.</p>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ url_for('meals') }}" class="btn btn-secondary me-2">
+                <i class="bi bi-gear-fill"></i> Adjust Preferences
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="bi bi-printer-fill"></i> Print Plan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- User Preferences Summary -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-info shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-person-check"></i> Your Dietary Preferences</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if current_user.dietary_preference %}
+                    <div class="col-md-4 mb-2">
+                        <strong><i class="bi bi-egg-fried"></i> Diet Type:</strong>
+                        <span class="badge bg-primary">{{ current_user.dietary_preference|capitalize }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if current_user.fitness_goal %}
+                    <div class="col-md-4 mb-2">
+                        <strong><i class="bi bi-bullseye"></i> Fitness Goal:</strong>
+                        <span class="badge bg-success">{{ current_user.fitness_goal|capitalize }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if current_user.preferred_proteins %}
+                    <div class="col-md-4 mb-2">
+                        <strong><i class="bi bi-heart"></i> Preferred Proteins:</strong><br>
+                        {% for protein in current_user.get_preferred_proteins() %}
+                        <span class="badge bg-secondary me-1">{{ protein }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row mt-2">
+                    {% if current_user.disliked_foods %}
+                    <div class="col-md-4 mb-2">
+                        <strong><i class="bi bi-x-circle"></i> Disliked Foods:</strong><br>
+                        {% for food in current_user.get_disliked_foods() %}
+                        <span class="badge bg-warning text-dark me-1">{{ food }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if current_user.allergies %}
+                    <div class="col-md-4 mb-2">
+                        <strong><i class="bi bi-exclamation-triangle"></i> Allergies:</strong><br>
+                        {% for allergy in current_user.get_allergies() %}
+                        <span class="badge bg-danger me-1">{{ allergy }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if current_user.restrictions and current_user.restrictions.get_dietary_restrictions() %}
+                    <div class="col-md-4 mb-2">
+                        <strong><i class="bi bi-slash-circle"></i> Restrictions:</strong><br>
+                        {% for restriction in current_user.restrictions.get_dietary_restrictions() %}
+                        <span class="badge bg-info me-1">{{ restriction }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="{{ url_for('save_meal_plan') }}" method="post">
+    <!-- Meal Plan Grid -->
+    <div class="row">
+        <!-- Breakfast Section -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card border-success h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-sunrise"></i> Breakfast</h5>
+                </div>
+                <div class="card-body">
+                    {% for meal in meal_plan.breakfast %}
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="breakfast_id" value="{{ meal.id }}" id="breakfast_{{ meal.id }}" {% if loop.first %}checked{% endif %}>
+                        <label class="form-check-label" for="breakfast_{{ meal.id }}">
+                            <strong>{{ meal.name }}</strong>
+                            <p class="text-muted small mb-1">{{ meal.description }}</p>
+                            <div class="meal-macros mt-2">
+                                <span class="badge bg-primary me-1">{{ meal.calories }} cal</span>
+                                <span class="badge bg-success me-1">P: {{ meal.protein }}g</span>
+                                <span class="badge bg-info me-1">C: {{ meal.carbs }}g</span>
+                                <span class="badge bg-warning text-dark">F: {{ meal.fats }}g</span>
+                            </div>
+                        </label>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        No breakfast options available for your preferences.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lunch Section -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card border-primary h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-sun"></i> Lunch</h5>
+                </div>
+                <div class="card-body">
+                    {% for meal in meal_plan.lunch %}
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="lunch_id" value="{{ meal.id }}" id="lunch_{{ meal.id }}" {% if loop.first %}checked{% endif %}>
+                        <label class="form-check-label" for="lunch_{{ meal.id }}">
+                            <strong>{{ meal.name }}</strong>
+                            <p class="text-muted small mb-1">{{ meal.description }}</p>
+                            <div class="meal-macros mt-2">
+                                <span class="badge bg-primary me-1">{{ meal.calories }} cal</span>
+                                <span class="badge bg-success me-1">P: {{ meal.protein }}g</span>
+                                <span class="badge bg-info me-1">C: {{ meal.carbs }}g</span>
+                                <span class="badge bg-warning text-dark">F: {{ meal.fats }}g</span>
+                            </div>
+                        </label>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        No lunch options available for your preferences.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dinner Section -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card border-danger h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-moon"></i> Dinner</h5>
+                </div>
+                <div class="card-body">
+                    {% for meal in meal_plan.dinner %}
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="dinner_id" value="{{ meal.id }}" id="dinner_{{ meal.id }}" {% if loop.first %}checked{% endif %}>
+                        <label class="form-check-label" for="dinner_{{ meal.id }}">
+                            <strong>{{ meal.name }}</strong>
+                            <p class="text-muted small mb-1">{{ meal.description }}</p>
+                            <div class="meal-macros mt-2">
+                                <span class="badge bg-primary me-1">{{ meal.calories }} cal</span>
+                                <span class="badge bg-success me-1">P: {{ meal.protein }}g</span>
+                                <span class="badge bg-info me-1">C: {{ meal.carbs }}g</span>
+                                <span class="badge bg-warning text-dark">F: {{ meal.fats }}g</span>
+                            </div>
+                        </label>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        No dinner options available for your preferences.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Snacks Section -->
+        <div class="col-md-6 col-lg-12 mb-4">
+            <div class="card border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-basket"></i> Snacks</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for meal in meal_plan.snacks %}
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="snack_id" value="{{ meal.id }}" id="snack_{{ meal.id }}">
+                                <label class="form-check-label" for="snack_{{ meal.id }}">
+                                    <strong>{{ meal.name }}</strong>
+                                    <p class="text-muted small mb-1">{{ meal.description }}</p>
+                                    <div class="meal-macros mt-2">
+                                        <span class="badge bg-primary me-1">{{ meal.calories }} cal</span>
+                                        <span class="badge bg-success">P: {{ meal.protein }}g</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                No snack options available for your preferences.
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nutrition Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calculator"></i> Nutrition Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-cup"></i> Hydration</h6>
+                            <p class="small">Remember to drink at least 2-3 liters of water daily, especially before and after workouts.</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-clock"></i> Meal Timing</h6>
+                            <p class="small">Try to eat every 3-4 hours to maintain energy levels and support your metabolism.</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-graph-up"></i> Protein Intake</h6>
+                            <p class="small">Aim for 1.6-2.2g of protein per kg of bodyweight to support muscle recovery and growth.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 col-md-6 mx-auto">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-save"></i> Save Meal Plan
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</form>
+{% endblock %}

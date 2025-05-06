@@ -1,107 +1,114 @@
-<!-- templates/profile.html -->
 {% extends "base.html" %}
 
 {% block title %}My Profile | Gym App{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h1 class="h2">My Profile</h1>
-            <p class="text-muted">Manage your account settings and information</p>
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Profile</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+                </div>
+                <h5 class="mb-1">{{ user.username }}</h5>
+                <p class="text-muted">{{ user.email }}</p>
+                <p>Member since: {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                <div class="d-grid">
+                    <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Current Streak</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="display-1 mb-3">{{ user.streak_days }}</div>
+                <p class="lead">days</p>
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ user.streak_days * 10 if user.streak_days < 10 else 100 }}%" aria-valuenow="{{ user.streak_days }}" aria-valuemin="0" aria-valuemax="10"></div>
+                </div>
+                <small class="text-muted">Keep your streak going by logging in daily!</small>
+            </div>
         </div>
     </div>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="card-title mb-0">Account Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary text-white rounded-circle p-3 me-3">
-                            <span class="h3 mb-0">{{ user.username[0].upper() }}</span>
-                        </div>
-                        <div>
-                            <h5 class="mb-0">{{ user.username }}</h5>
-                            <p class="text-muted mb-0">Member since {{ user.created_at.strftime('%b %d, %Y') }}</p>
-                        </div>
-                    </div>
-
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span>Email</span>
-                            <span>{{ user.email }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span>Current Streak</span>
-                            <span>{{ user.streak_days }} days</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span>Last Login</span>
-                            <span>{{ user.last_login.strftime('%b %d, %Y') if user.last_login else 'N/A' }}</span>
-                        </li>
-                    </ul>
-                </div>
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Personal Information</h4>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Username</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Email</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Height</th>
+                            <td>{{ user.height }} inches</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Current Weight</th>
+                            <td>{{ user.weight }} Ibs</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Target Weight</th>
+                            <td>{{ user.target_weight }} Ibs</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="col-md-8 mb-4">
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="card-title mb-0">Health Information</h5>
-                </div>
-                <div class="card-body">
-                    <form>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="current_weight" class="form-label">Current Weight (lbs)</label>
-                                <input type="number" class="form-control" id="current_weight" value="{{ user.current_weight or '' }}" step="0.1">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="target_weight" class="form-label">Target Weight (lbs)</label>
-                                <input type="number" class="form-control" id="target_weight" value="{{ user.target_weight or '' }}" step="0.1">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Update Health Info</button>
-                    </form>
-                </div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Fitness Preferences</h4>
             </div>
-
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="card-title mb-0">Security</h5>
-                </div>
-                <div class="card-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="current_password">
-                        </div>
-                        <div class="mb-3">
-                            <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="new_password">
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirm_new_password" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirm_new_password">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Change Password</button>
-                    </form>
-                </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Dietary Preference</th>
+                            <td>{{ user.dietary_preference|title if user.dietary_preference else 'Not specified' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Fitness Goal</th>
+                            <td>{{ user.fitness_goal|title if user.fitness_goal else 'Not specified' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Workout Experience</th>
+                            <td>{{ user.workout_experience|title if user.workout_experience else 'Not specified' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Workout Days Per Week</th>
+                            <td>{{ user.workout_days_per_week if user.workout_days_per_week else 'Not specified' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Goals</th>
+                            <td>
+                                {% if user.goals %}
+                                    <ul class="mb-0">
+                                        {% for goal in user.get_goals() %}
+                                            <li>{{ goal }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    Not specified
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

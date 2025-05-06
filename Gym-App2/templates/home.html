@@ -1,51 +1,195 @@
-<!-- templates/home.html -->
 {% extends "base.html" %}
 
-{% block title %}Home | Gym App{% endblock %}
+{% block title %}Welcome to Gym App{% endblock %}
 
 {% block content %}
-<div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-4 fw-bold">Welcome to Gym App</h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">Track your workouts, monitor your progress, and achieve your fitness goals with our state-of-the-art gym application.</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4 gap-3">Go to Dashboard</a>
-            <a href="#" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row">
+        <div class="col-lg-6">
+            <h1 class="display-4 mb-4">Transform Your Fitness Journey</h1>
+            <p class="lead">Get personalized workout plans and meal recommendations tailored to your unique goals and needs.</p>
+            <hr class="my-4">
+            <p>Join thousands of users who have already transformed their fitness journey with our personalized approach.</p>
+            <div class="mt-5">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <h4 class="card-title text-center mb-4">Why Choose Us?</h4>
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <i class="bi bi-clipboard-check text-primary fs-3"></i>
+                        </div>
+                        <div>
+                            <h5>Personalized Plans</h5>
+                            <p class="text-muted">Custom workout and meal plans based on your preferences and goals.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <i class="bi bi-graph-up text-primary fs-3"></i>
+                        </div>
+                        <div>
+                            <h5>Track Progress</h5>
+                            <p class="text-muted">Monitor your progress with detailed stats and visualizations.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="bi bi-calendar-check text-primary fs-3"></i>
+                        </div>
+                        <div>
+                            <h5>Stay Organized</h5>
+                            <p class="text-muted">Keep track of your workouts and meals with our calendar system.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="row g-4 py-5">
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-calendar-check fs-4"></i>
+    <!-- How It Works Section -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">How It Works</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="bi bi-person-plus fs-2"></i>
+                    </div>
+                    <h4>1. Create Profile</h4>
+                    <p class="text-muted">Tell us about your goals, preferences, and any restrictions.</p>
                 </div>
-                <h3 class="card-title h5">Track Workouts</h3>
-                <p class="card-text">Log your exercises, sets, reps, and weights to keep a detailed record of your training sessions.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="bi bi-collection fs-2"></i>
+                    </div>
+                    <h4>2. Get Recommendations</h4>
+                    <p class="text-muted">Receive personalized workout and meal plans tailored to you.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="bi bi-trophy fs-2"></i>
+                    </div>
+                    <h4>3. Achieve Results</h4>
+                    <p class="text-muted">Track your progress and celebrate your fitness achievements.</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-graph-up fs-4"></i>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Our Features</h2>
+            <p class="lead text-muted">Everything you need for your fitness journey in one place</p>
+        </div>
+    </div>
+
+    <!-- Workout Features -->
+    <div class="row mt-3 mb-5">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary p-3 rounded me-3">
+                            <i class="bi bi-activity text-white fs-3"></i>
+                        </div>
+                        <h3 class="mb-0">Personalized Workouts</h3>
+                    </div>
+                    <p>Our workout plans are tailored to your fitness level, goals, and physical limitations. Whether you're a beginner or advanced athlete, we have the perfect plan for you.</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Custom workout routines based on your experience level</li>
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Adaptable plans for home or gym workouts</li>
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Injury-conscious exercise recommendations</li>
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Progress tracking to ensure continuous improvement</li>
+                    </ul>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('workouts') }}" class="btn btn-outline-primary mt-3">Set Workout Preferences</a>
+                    {% endif %}
                 </div>
-                <h3 class="card-title h5">Monitor Progress</h3>
-                <p class="card-text">Visualize your improvements with charts and statistics to stay motivated on your fitness journey.</p>
+            </div>
+        </div>
+
+        <!-- Nutrition Features -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary p-3 rounded me-3">
+                            <i class="bi bi-egg-fried text-white fs-3"></i>
+                        </div>
+                        <h3 class="mb-0">Nutrition Planning</h3>
+                    </div>
+                    <p>Reach your fitness goals faster with personalized meal plans that match your dietary preferences and restrictions while supporting your fitness objectives.</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Meal recommendations for all dietary preferences</li>
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Nutrition plans aligned with your fitness goals</li>
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Accommodations for allergies and food restrictions</li>
+                        <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-primary me-2"></i> Balanced macronutrient recommendations</li>
+                    </ul>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('meals') }}" class="btn btn-outline-primary mt-3">Set Diet Preferences</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-trophy fs-4"></i>
+
+    <!-- Progress Tracking Section -->
+    <div class="row my-5">
+        <div class="col-12">
+            <div class="card border-0 bg-light">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h3>Track Your Progress</h3>
+                            <p class="lead">Our comprehensive tracking tools help you visualize your fitness journey and stay motivated.</p>
+                            <p>Monitor your workout completion, streak days, weight changes, and more. Set goals and watch yourself achieve them day by day.</p>
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('progress') }}" class="btn btn-primary">View Your Progress</a>
+                            {% else %}
+                            <a href="{{ url_for('register') }}" class="btn btn-primary">Start Tracking Today</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="bi bi-graph-up-arrow text-primary" style="font-size: 8rem;"></i>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="card-title h5">Achieve Goals</h3>
-                <p class="card-text">Set personal targets and receive notifications when you reach new milestones in your fitness journey.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="bg-primary text-white p-5 rounded">
+                <h2>Ready to Transform Your Fitness?</h2>
+                <p class="lead">Join thousands of users who have already achieved their fitness goals</p>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg mt-3">Go to Your Dashboard</a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg mt-3">Sign Up Now</a>
+                {% endif %}
             </div>
         </div>
     </div>
