@@ -6,6 +6,7 @@ class Restriction:
         self.is_vegetarian = is_vegetarian
         self.allergies = allergies
 
+    #getters
     def get_vegan(self):
         return self.is_vegan
 
@@ -15,11 +16,13 @@ class Restriction:
     def get_allergies(self):
         return self.allergies
 
+    #setters
     def change_vegan(self, is_vegan):
         self.is_vegan = is_vegan
 
     def change_vegetarian(self, is_vegetarian):
         self.is_vegetarian = is_vegetarian
 
+    #adds to the allergy list
     def add_allergy(self, allergy):
         self.allergies.append(allergy)
