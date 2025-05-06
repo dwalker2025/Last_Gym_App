@@ -15,12 +15,13 @@ class Planner:
     def getWK(self):
         return self.workouts
     
-    #Creates a super simple testing calendar
+    #Creates a super simple testing calendar and returns it
     def showCalendar(self):
             self.generic_map()
             return self.map
 
 
+    #adds the generic variables to the list
     def generic_map(self):
         self.map.append(["Burpees","Salmon"])
         self.map.append(["Push-ups","Steak"])
@@ -37,11 +38,6 @@ class Planner:
        self.body_history.append(this_week)
        self.workouts=[]
        self.food=[]
-
-#WIP to make the map of the body, will be finnished soon
-    def make_map(self):
-        
-        pass
 
     def get_history(self):
         return self.history
