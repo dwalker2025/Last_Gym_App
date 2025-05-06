@@ -145,9 +145,17 @@ def food_display():
         data = current_response
         if (data == None):
             data = internal_search_food(query=search)
-            newResponse = Response(search = search, last_searched =Response.get_time(), returned_data = data)
-            db.session.add(newResponse)
-            db.session.commit()
+            try:
+                x = data["foods"]
+                newResponse = Response(search = search, last_searched =Response.get_time(), returned_data = data)
+                db.session.add(newResponse)
+                db.session.commit()
+            except(KeyError):
+                print("Error: api did not return a valid response")
+                print("Response was: ")
+                print(data)
+                return render_template('foodDisplay.html', foodList={})
+            
         else:
             data = data.get_data()
         #print(type(foodList))
