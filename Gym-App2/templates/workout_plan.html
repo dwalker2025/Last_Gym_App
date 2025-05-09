@@ -7,7 +7,7 @@
     <div class="col-12">
         <h1 class="mb-4">Your Personalized Workout Plan</h1>
         <p class="lead">Based on your fitness goals and physical restrictions, here's a workout plan tailored just for you.</p>
-        
+
         <div class="d-flex justify-content-end mb-3">
             <a href="{{ url_for('workouts') }}" class="btn btn-secondary me-2">
                 <i class="bi bi-gear-fill"></i> Adjust Preferences
@@ -33,9 +33,9 @@
                     <span class="badge bg-secondary me-2">{{ plan.template.duration }} mins</span>
                     <span class="badge bg-success">{{ plan.template.fitness_goal|capitalize }}</span>
                 </div>
-                
+
                 <p class="card-text mb-4">{{ plan.template.description }}</p>
-                
+
                 <h6 class="border-bottom pb-2 mb-3">Exercises</h6>
                 <div class="exercise-list">
                     {% for exercise_data in plan.exercises %}

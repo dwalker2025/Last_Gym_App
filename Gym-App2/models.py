@@ -576,3 +576,35 @@ class UserMealPlan(db.Model):
 
     def get_snacks(self):
         return json.loads(self.snacks) if self.snacks else []
+
+
+class CalendarEvent(db.Model):
+    __tablename__ = 'calendar_events'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date = db.Column(db.String(10), nullable=False)  # Format: YYYY-MM-DD
+    time = db.Column(db.String(8), nullable=True)  # Format: HH:MM:SS
+    title = db.Column(db.String(100), nullable=False)
+    type = db.Column(db.String(20), nullable=False)  # 'workout', 'meal', etc.
+    description = db.Column(db.Text, nullable=True)
+    url = db.Column(db.String(200), nullable=True)
+    event_id = db.Column(db.String(50), nullable=True)  # Reference to the original item (workout_id, meal_id, etc.)
+
+    # Relationships
+    user = db.relationship('User', backref=db.backref('calendar_events', lazy=True))
+
+    # This method will help format the events for the calendar
+    def to_dict(self):
+        return {
+            'title': self.title,
+            'start': f"{self.date}T{self.time}" if self.time else self.date,
+            'allDay': self.time is None,
+            'extendedProps': {
+                'type': self.type,
+                'description': self.description,
+                'url': self.url,
+                'id': self.event_id
+            },
+            'className': f'fc-{self.type}-event'
+        }

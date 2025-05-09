@@ -22,7 +22,6 @@ class TestWK(unittest.TestCase):
         self.workout.setName("Bench Press")
         self.workout.setCalories(150)
         self.workout.setTimeNeeded(45.0)
-
         self.assertEqual(self.workout.getType(), "Gaining Weight", "Type should update after setType")
         self.assertEqual(self.workout.getName(), "Bench Press", "Name should update after setName")
         self.assertEqual(self.workout.getCalories(), 150, "Calories should update after setCalories")
