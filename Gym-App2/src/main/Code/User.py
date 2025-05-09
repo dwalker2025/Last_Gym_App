@@ -40,11 +40,11 @@ goal_var = tk.StringVar(value="Bulk")
 tk.Radiobutton(root, text="Bulk", variable=goal_var, value="Bulk").pack()
 tk.Radiobutton(root, text="Cut", variable=goal_var, value="Cut").pack()
 
-# Vegetarian
+# Vegetarian, creates the button
 vegetarian_var = tk.BooleanVar()
 tk.Checkbutton(root, text="Are you vegetarian?", variable=vegetarian_var).pack()
 
-# Restrictions
+# Restrictions, adds if boxes clicked
 tk.Label(root, text="Any dietary restrictions?").pack()
 restrictions_entry = tk.Entry(root)
 restrictions_entry.pack()

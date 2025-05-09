@@ -15,14 +15,22 @@ class Planner:
     def getWK(self):
         return self.workouts
     
-    #Creates a super simple testing calendar
+    #Creates a super simple testing calendar and returns it
     def showCalendar(self):
-        if self.workouts and self.diet:
-            self.map.append([self.workouts[0],self.diet[0]])
+            self.generic_map()
             return self.map
-        else:
-            self.map.append(["Salmon","Burpees"])
-            return self.map
+
+
+    #adds the generic variables to the list
+    def generic_map(self):
+        self.map.append(["Burpees","Salmon"])
+        self.map.append(["Push-ups","Steak"])
+        self.map.append(["Weights","Chicken Alfredo"])
+        self.map.append(["Jumping Jacks","Shrimp"])
+        self.map.append(["Crunches","Calamari"])
+        self.map.append(["Break day","Mystery Meat"])
+        self.map.append(["Climbing Wall","Lamb"])
+        
 
 #Logs the state of the week, current body height and weight, and resets the weeks food and workouts
     def log_state(self):
@@ -30,11 +38,6 @@ class Planner:
        self.body_history.append(this_week)
        self.workouts=[]
        self.food=[]
-
-#WIP to make the map of the body, will be finnished soon
-    def make_map(self):
-        
-        pass
 
     def get_history(self):
         return self.history

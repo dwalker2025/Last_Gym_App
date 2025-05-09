@@ -13,6 +13,8 @@ class Food:
         self.isWheat = isWheat
         self.isBulking = isBulking
 
+
+    #getters
     def get_name(self):
         return self.name
 

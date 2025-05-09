@@ -1,5 +1,8 @@
 # Last Gym App
 
+# Quick start guide:
+    Go to app.py and click run and debug, when link appears, crtl+click
+
 ## Overview  
 The goal of this app is to help users **plan and log their workouts** easily.
 
@@ -24,4 +27,6 @@ The goal of this app is to help users **plan and log their workouts** easily.
 - **Class Diagrams** https://app.diagrams.net/#G1t_KkjhLRLOMoe-dBG87n9MdTVRwtAyHr#%7B%22pageId%22%3A%22lZCz2yDrK2QZgYUH8SCL%22%7D
 - **Retrospective** https://docs.google.com/document/d/1Vhc3hZqLiRo0MRhNWN3_542GV4vE4GgE0ZcBiQ86Om8/edit?usp=sharing
 - **Trello Board:** [Track progress] (https://trello.com/b/QxrryKLH/gym-tracker-app)
+
+-Final Diagrams: https://app.diagrams.net/#G1t_KkjhLRLOMoe-dBG87n9MdTVRwtAyHr#%7B%22pageId%22%3A%22lZCz2yDrK2QZgYUH8SCL%22%7D
 
