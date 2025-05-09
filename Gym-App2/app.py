@@ -390,6 +390,25 @@ def internal_search_food(query):
     #print(response)
     return response.json()
 
+def internal_full_API_Method(query):
+    current_response = Response.query.filter((Response.search == query)).first()
+    data = current_response
+    if (data == None):
+        data = internal_search_food(query=query)
+        try:
+            x = data["foods"]
+            newResponse = Response(search = query, last_searched =Response.get_time(), returned_data = data)
+            #db.session.add(newResponse)
+            #db.session.commit()
+        except(KeyError):
+            print("Error: api did not return a valid response")
+            print("Response was: ")
+            print(data)
+            return {}
+    else:
+        data = data.get_data()
+        return data
+
 
 if __name__ == '__main__':
     with app.app_context():
