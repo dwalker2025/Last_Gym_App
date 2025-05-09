@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Log Workout | Gym App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">Log Workout: {{ workout.workout_name }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('log_workout', workout_id=workout.id) }}">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="duration" class="form-label">Duration (minutes)</label>
+                                <input type="number" class="form-control" id="duration" name="duration" value="{{ workout.duration }}" required min="1">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" name="date" value="{{ workout.date.strftime('%Y-%m-%d') if workout.date else date.today().strftime('%Y-%m-%d') }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-3">Exercise Details</h4>
+                    
+                    {% for i, exercise_data in enumerate(exercises) %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">{{ exercise_data.exercise.name }}</h5>
+                            <small class="text-muted">{{ exercise_data.exercise.muscle_group|title }} | {{ exercise_data.exercise.difficulty|title }}</small>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-3">{{ exercise_data.exercise.description }}</p>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Set</th>
+                                            <th>Reps</th>
+                                            <th>Weight (kg)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for set_num in range(1, exercise_data.sets + 1) %}
+                                        <tr>
+                                            <td>{{ set_num }}</td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm" name="reps_{{ i }}[]" value="{{ exercise_data.reps }}" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm" name="weights_{{ i }}[]" min="0" step="0.5">
+                                            </td>
+                                            <input type="hidden" name="sets_{{ i }}[]" value="{{ set_num }}">
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="How was your workout? Any challenges or achievements?">{{ workout.notes }}</textarea>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="share_workout" name="share_workout">
+                        <label class="form-check-label" for="share_workout">
+                            Share this workout on your profile
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Log Workout</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to add more sets dynamically
+    function addSet(exerciseIndex) {
+        const table = document.querySelector(`#exercise-${exerciseIndex} table tbody`);
+        const rowCount = table.rows.length;
+        const newRow = table.insertRow();
+        
+        newRow.innerHTML = `
+            <td>${rowCount + 1}</td>
+            <td><input type="number" class="form-control form-control-sm" name="reps_${exerciseIndex}[]" min="0"></td>
+            <td><input type="number" class="form-control form-control-sm" name="weights_${exerciseIndex}[]" min="0" step="0.5"></td>
+            <input type="hidden" name="sets_${exerciseIndex}[]" value="${rowCount + 1}">
+        `;
+    }
+</script>
+{% endblock %}

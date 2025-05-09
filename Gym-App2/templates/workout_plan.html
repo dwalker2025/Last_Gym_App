@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Your Workout Plan{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-4">Your Personalized Workout Plan</h1>
+        <p class="lead">Based on your fitness goals and physical restrictions, here's a workout plan tailored just for you.</p>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ url_for('workouts') }}" class="btn btn-secondary me-2">
+                <i class="bi bi-gear-fill"></i> Adjust Preferences
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="bi bi-printer-fill"></i> Print Plan
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for plan in workout_plans %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-primary">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ plan.template.name }}</h5>
+                <span class="badge bg-light text-dark">{{ plan.template.difficulty|capitalize }}</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-info me-2">{{ plan.template.workout_type|capitalize }}</span>
+                    <span class="badge bg-secondary me-2">{{ plan.template.duration }} mins</span>
+                    <span class="badge bg-success">{{ plan.template.fitness_goal|capitalize }}</span>
+                </div>
+
+                <p class="card-text mb-4">{{ plan.template.description }}</p>
+
+                <h6 class="border-bottom pb-2 mb-3">Exercises</h6>
+                <div class="exercise-list">
+                    {% for exercise_data in plan.exercises %}
+                    <div class="exercise-item mb-3">
+                        <h6 class="mb-1">{{ exercise_data.exercise.name }}</h6>
+                        <p class="text-muted small mb-1">{{ exercise_data.exercise.description }}</p>
+                        <div class="d-flex align-items-center">
+                            <span class="me-3"><i class="bi bi-layers"></i> {{ exercise_data.sets }} sets</span>
+                            <span class="me-3"><i class="bi bi-repeat"></i> {{ exercise_data.reps }} reps</span>
+                            <span><i class="bi bi-stopwatch"></i> {{ exercise_data.rest }}s rest</span>
+                        </div>
+                        <div class="mt-1">
+                            <span class="badge bg-warning text-dark">{{ exercise_data.exercise.muscle_group|capitalize }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <form action="{{ url_for('save_workout') }}" method="post">
+                    <input type="hidden" name="template_id" value="{{ plan.template.id }}">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle"></i> Add to My Workouts
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No workout plans are available for your preferences. Please update your preferences.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Workout Tips Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Workout Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <h6><i class="bi bi-stopwatch"></i> Timing is Key</h6>
+                        <p class="small">Rest between sets is just as important as the exercise itself. Follow the recommended rest times closely for optimal results.</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h6><i class="bi bi-heart-pulse"></i> Monitor Your Intensity</h6>
+                        <p class="small">Aim to work at 70-85% of your max effort. You should be challenged but still able to maintain proper form.</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h6><i class="bi bi-arrow-repeat"></i> Progressive Overload</h6>
+                        <p class="small">Gradually increase weight, reps, or sets over time to continue making progress and avoid plateaus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center my-5">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

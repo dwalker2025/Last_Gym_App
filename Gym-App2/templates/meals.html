@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Preferences - Gym App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .protein-item {
+        margin-bottom: 10px;
+    }
+    .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 5px;
+    }
+    .tag {
+        background-color: #e9ecef;
+        border-radius: 16px;
+        padding: 5px 10px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .tag .close {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="bi bi-egg-fried"></i> Meal Preferences</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Meal Preferences</li>
+                    </ol>
+                </nav>
+            </div>
+            <p class="lead">Customize your dietary preferences to get personalized meal recommendations.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('meals') }}">
+                        <div class="row">
+                            <!-- Basic Preferences -->
+                            <div class="col-md-6">
+                                <h3 class="mb-4">Basic Preferences</h3>
+
+                                <div class="mb-3">
+                                    <label for="dietary_preference" class="form-label">Dietary Type</label>
+                                    <select class="form-select" id="dietary_preference" name="dietary_preference">
+                                        {% for diet in dietary_types %}
+                                        <option value="{{ diet }}" {% if current_user.dietary_preference == diet %}selected{% endif %}>
+                                            {{ diet|capitalize }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="fitness_goal" class="form-label">Fitness Goal</label>
+                                    <select class="form-select" id="fitness_goal" name="fitness_goal">
+                                        {% for goal in fitness_goals %}
+                                        <option value="{{ goal }}" {% if current_user.fitness_goal == goal %}selected{% endif %}>
+                                            {{ goal|capitalize }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">
+                                        <ul class="mb-0 ps-3">
+                                            <li>Bulking: Higher calories to gain muscle</li>
+                                            <li>Cutting: Lower calories to lose fat</li>
+                                            <li>Maintenance: Balanced diet to maintain weight</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Protein Sources</label>
+                                    <div class="row">
+                                        {% for protein in protein_sources %}
+                                        <div class="col-md-6 protein-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                       name="preferred_proteins" value="{{ protein }}"
+                                                       id="protein_{{ protein }}"
+                                                       {% if protein in current_proteins %}checked{% endif %}>
+                                                <label class="form-check-label" for="protein_{{ protein }}">
+                                                    {{ protein|capitalize }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Restrictions & Dislikes -->
+                            <div class="col-md-6">
+                                <h3 class="mb-4">Restrictions & Preferences</h3>
+
+                                <div class="mb-4">
+                                    <label for="disliked_foods" class="form-label">Disliked Foods</label>
+                                    <input type="text" class="form-control" id="disliked_foods" name="disliked_foods"
+                                           value="{{ current_dislikes|join(', ') }}"
+                                           placeholder="e.g., broccoli, mushrooms, olives">
+                                    <div class="form-text">Separate foods with commas</div>
+                                    <div id="dislikes-tags" class="tag-container">
+                                        <!-- Tags will be dynamically added here -->
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="allergies" class="form-label">Allergies</label>
+                                    <input type="text" class="form-control" id="allergies" name="allergies"
+                                           value="{{ current_allergies|join(', ') }}"
+                                           placeholder="e.g., peanuts, shellfish, dairy">
+                                    <div class="form-text">Separate allergies with commas</div>
+                                    <div id="allergies-tags" class="tag-container">
+                                        <!-- Tags will be dynamically added here -->
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="dietary_restrictions" class="form-label">Dietary Restrictions</label>
+                                    <input type="text" class="form-control" id="dietary_restrictions" name="dietary_restrictions"
+                                           value="{{ current_restrictions|join(', ') }}"
+                                           placeholder="e.g., gluten-free, low-sodium, low-carb">
+                                    <div class="form-text">Separate restrictions with commas</div>
+                                    <div id="restrictions-tags" class="tag-container">
+                                        <!-- Tags will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check2-circle"></i> Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to create tag elements
+    function createTags(inputId, containerid) {
+        const input = document.getElementById(inputId);
+        const container = document.getElementById(containerid);
+
+        function updateTags() {
+            container.innerHTML = '';
+            const values = input.value.split(',').filter(item => item.trim() !== '');
+
+            values.forEach(value => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.innerHTML = `${value.trim()} <span class="close">&times;</span>`;
+
+                tag.querySelector('.close').addEventListener('click', function() {
+                    const newValues = input.value.split(',')
+                        .filter(item => item.trim() !== value.trim())
+                        .join(', ');
+                    input.value = newValues;
+                    updateTags();
+                });
+
+                container.appendChild(tag);
+            });
+        }
+
+        input.addEventListener('blur', updateTags);
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                updateTags();
+            }
+        });
+
+        // Initialize tags
+        updateTags();
+    }
+
+    // Initialize tags when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        createTags('disliked_foods', 'dislikes-tags');
+        createTags('allergies', 'allergies-tags');
+        createTags('dietary_restrictions', 'restrictions-tags');
+    });
+</script>
+{% endblock %}

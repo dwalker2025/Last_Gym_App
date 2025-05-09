@@ -1,180 +1,317 @@
-<!-- templates/dashboard.html -->
 {% extends "base.html" %}
 
-{% block title %}Dashboard | Gym App{% endblock %}
+{% block title %}Dashboard - Gym App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css">
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <h1 class="h2">Dashboard</h1>
-        <p class="text-muted">Welcome to your fitness command center</p>
-    </div>
-</div>
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Calendar Sidebar -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Schedule</h5>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" id="calendarMonthView" class="btn btn-outline-primary active">Month</button>
+                            <button type="button" id="calendarWeekView" class="btn btn-outline-primary">Week</button>
+                            <button type="button" id="calendarDayView" class="btn btn-outline-primary">Day</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card text-bg-primary h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Hot Streak</h6>
-                        <h2 class="card-title mb-0">{{ stats.streak_days|default('0') }} days</h2>
+        <!-- Main Content Area -->
+        <div class="col-lg-8">
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Streak</h5>
+                            <h2 class="mb-0">{{ stats.streak_days }} <small class="text-muted">days</small></h2>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-circle p-3">
-                        <i class="bi bi-fire fs-4 text-primary"></i>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Current Weight</h5>
+                            <h2 class="mb-0">{{ stats.current_weight }} <small class="text-muted">lbs</small></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Target Weight</h5>
+                            <h2 class="mb-0">{{ stats.target_weight }} <small class="text-muted">lbs</small></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Change</h5>
+                            <h2 class="mb-0 {% if stats.weight_change < 0 %}text-success{% elif stats.weight_change > 0 %}text-danger{% endif %}">
+                                {{ stats.weight_change }} <small class="text-muted">lbs</small>
+                            </h2>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card text-bg-success h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Active Users</h6>
-                        <h2 class="card-title mb-0">{{ stats.active_users }}</h2>
-                    </div>
-                    <div class="bg-white rounded-circle p-3">
-                        <i class="bi bi-person-check fs-4 text-success"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card text-bg-info h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-white-50">Today's Workouts</h6>
-                        <h2 class="card-title mb-0">0</h2>
-                    </div>
-                    <div class="bg-white rounded-circle p-3">
-                        <i class="bi bi-calendar-date fs-4 text-info"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-white">
-                <h5 class="card-title mb-0">Workout Activity</h5>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    This chart will display your workout activity over time once you start logging workouts.
+            <!-- Progress Chart -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Workout Progress</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="progressDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Last 30 Days
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="progressDropdown">
+                                <li><a class="dropdown-item" href="#" data-range="7">Last 7 Days</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="30">Last 30 Days</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="90">Last 90 Days</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center justify-content-center" style="height: 250px;">
-                    <p class="text-muted">No workout data available yet</p>
+                <div class="card-body">
+                    <canvas id="workoutProgressChart" height="250"></canvas>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="btn-group">
+                        <button id="downloadChartPNG" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download"></i> Download
+                        </button>
+                        <button id="shareChartEmail" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-envelope"></i> Email
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-white">
-                <h5 class="card-title mb-0">Progress Tracker</h5>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    This chart will display your weight loss progress and activity levels over time.
-                </div>
-                <div class="d-flex align-items-center justify-content-center" style="height: 250px;">
-                    <p class="text-muted">Start tracking your weight and activity to see progress here</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-8 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-white">
-                <h5 class="card-title mb-0">Recent Users</h5>
-            </div>
-            <div class="card-body p-0">
-                {% if stats.recent_joins %}
-                    <ul class="list-group list-group-flush">
-                        {% for user in stats.recent_joins %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="badge bg-primary rounded-pill me-2">{{ loop.index }}</span>
-                                    {{ user.username }}
+            <!-- Recommendations -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Today's Meal Plan</h5>
+                                <a href="{{ url_for('meals') }}" class="btn btn-sm btn-outline-primary">Customize</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {% if meal_plan %}
+                                <div class="mb-3">
+                                    <h6><i class="bi bi-sunrise text-warning"></i> Breakfast</h6>
+                                    <p class="mb-1">{{ meal_plan.breakfast.name }}</p>
+                                    <small class="text-muted">{{ meal_plan.breakfast.calories }} cal | {{ meal_plan.breakfast.protein }}g protein</small>
                                 </div>
-                                <small class="text-muted">{{ user.created_at.strftime('%b %d, %Y') }}</small>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="p-4 text-center">
-                        <p class="text-muted">No users available</p>
+                                <div class="mb-3">
+                                    <h6><i class="bi bi-sun text-warning"></i> Lunch</h6>
+                                    <p class="mb-1">{{ meal_plan.lunch.name }}</p>
+                                    <small class="text-muted">{{ meal_plan.lunch.calories }} cal | {{ meal_plan.lunch.protein }}g protein</small>
+                                </div>
+                                <div class="mb-3">
+                                    <h6><i class="bi bi-moon text-warning"></i> Dinner</h6>
+                                    <p class="mb-1">{{ meal_plan.dinner.name }}</p>
+                                    <small class="text-muted">{{ meal_plan.dinner.calories }} cal | {{ meal_plan.dinner.protein }}g protein</small>
+                                </div>
+                                <div>
+                                    <h6><i class="bi bi-cup-straw text-warning"></i> Snack</h6>
+                                    <p class="mb-1">{{ meal_plan.snack.name }}</p>
+                                    <small class="text-muted">{{ meal_plan.snack.calories }} cal | {{ meal_plan.snack.protein }}g protein</small>
+                                </div>
+                            {% else %}
+                                <div class="text-center p-4">
+                                    <i class="bi bi-egg-fried fs-1 text-muted"></i>
+                                    <p class="mt-3">No meal plan yet. Create one now!</p>
+                                    <a href="{{ url_for('meals') }}" class="btn btn-primary mt-2">Create Meal Plan</a>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-white">
-                <h5 class="card-title mb-0">Health Stats</h5>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between mb-3">
-                    <span>Current Weight</span>
-                    <span class="fw-bold">{{ stats.current_weight|default('Not set') }}</span>
                 </div>
-                <div class="d-flex justify-content-between mb-3">
-                    <span>Target Weight</span>
-                    <span class="fw-bold">{{ stats.target_weight|default('Not set') }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-3">
-                    <span>Weight Change</span>
-                    <span class="fw-bold {{ 'text-success' if stats.weight_change and stats.weight_change < 0 else 'text-danger' if stats.weight_change and stats.weight_change > 0 else '' }}">
-                        {{ stats.weight_change|default('0') }} lbs
-                    </span>
-                </div>
-                <div class="mt-3">
-                    <a href="#" class="btn btn-sm btn-outline-primary">Update Stats</a>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recommended Workouts</h5>
+                                <a href="{{ url_for('workouts') }}" class="btn btn-sm btn-outline-primary">Customize</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {% if workout_plan %}
+                                {% for workout in workout_plan %}
+                                    <div class="mb-3">
+                                        <h6><i class="bi bi-activity text-primary"></i> {{ workout.name }}</h6>
+                                        <p class="mb-1">{{ workout.description }}</p>
+                                        <small class="text-muted">{{ workout.duration }} minutes | {{ workout.difficulty }} level</small>
+                                        <a href="{{ url_for('workout_plan') }}" class="d-block mt-2">View Details</a>
+                                    </div>
+                                    {% if not loop.last %}<hr>{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center p-4">
+                                    <i class="bi bi-bicycle fs-1 text-muted"></i>
+                                    <p class="mt-3">No workout plan yet. Create one now!</p>
+                                    <a href="{{ url_for('workouts') }}" class="btn btn-primary mt-2">Create Workout Plan</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <div class="card">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Quick Actions</h5>
+<!-- Email Share Modal -->
+<div class="modal fade" id="shareEmailModal" tabindex="-1" aria-labelledby="shareEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareEmailModalLabel">Share Progress via Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <a href="#" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-plus-circle"></i> New Workout
-                        </a>
+            <div class="modal-body">
+                <form id="shareEmailForm">
+                    <div class="mb-3">
+                        <label for="emailRecipient" class="form-label">Recipient Email</label>
+                        <input type="email" class="form-control" id="emailRecipient" required>
                     </div>
-                    <div class="col-md-4">
-                        <a href="#" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-bar-chart"></i> View Progress
-                        </a>
+                    <div class="mb-3">
+                        <label for="emailSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="emailSubject" value="My Gym App Progress">
                     </div>
-                    <div class="col-md-4">
-                        <a href="#" class="btn btn-outline-info w-100 d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-gear"></i> Settings
-                        </a>
+                    <div class="mb-3">
+                        <label for="emailMessage" class="form-label">Message</label>
+                        <textarea class="form-control" id="emailMessage" rows="3">Here's my workout progress from Gym App!</textarea>
                     </div>
-                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="sendEmailBtn">Send Email</button>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Calendar
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: ''
+            },
+            height: 'auto',
+            events: {{ calendar_data|tojson|safe if calendar_data else '[]' }},
+            eventClick: function(info) {
+                // Show event details
+                alert(info.event.title);
+            }
+        });
+        calendar.render();
+
+        // Calendar View Buttons
+        document.getElementById('calendarMonthView').addEventListener('click', function() {
+            calendar.changeView('dayGridMonth');
+            toggleActiveButton(this);
+        });
+        document.getElementById('calendarWeekView').addEventListener('click', function() {
+            calendar.changeView('timeGridWeek');
+            toggleActiveButton(this);
+        });
+        document.getElementById('calendarDayView').addEventListener('click', function() {
+            calendar.changeView('timeGridDay');
+            toggleActiveButton(this);
+        });
+
+        function toggleActiveButton(button) {
+            document.querySelectorAll('#calendarMonthView, #calendarWeekView, #calendarDayView').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+        }
+
+        // Initialize Progress Chart
+        const ctx = document.getElementById('workoutProgressChart').getContext('2d');
+        // Sample data - would be replaced by actual user data from server
+        const workoutData = {
+            labels: Array.from({length: 30}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - 29 + i);
+                return date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+            }),
+            datasets: [{
+                label: 'Workouts Completed',
+                data: Array.from({length: 30}, () => Math.floor(Math.random() * 2)),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1
+            }]
+        };
+
+        const workoutChart = new Chart(ctx, {
+            type: 'bar',
+            data: workoutData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1,
+                        suggestedMax: 2
+                    }
+                }
+            }
+        });
+
+        // Chart Download
+        document.getElementById('downloadChartPNG').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.download = 'workout-progress.png';
+            link.href = document.getElementById('workoutProgressChart').toDataURL('image/png');
+            link.click();
+        });
+
+        // Chart Email Share
+        document.getElementById('shareChartEmail').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('shareEmailModal'));
+            modal.show();
+        });
+
+        document.getElementById('sendEmailBtn').addEventListener('click', function() {
+            const recipient = document.getElementById('emailRecipient').value;
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+
+            if (recipient) {
+                // In a real app, you'd send this data to the server to process the email
+                alert(`Email would be sent to ${recipient} with your progress chart attached.`);
+                bootstrap.Modal.getInstance(document.getElementById('shareEmailModal')).hide();
+            }
+        });
+    });
+</script>
 {% endblock %}
