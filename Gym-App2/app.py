@@ -12,7 +12,7 @@ import base64
 import requests
 
 # Import models
-from models import db, User, Restriction, Meal, Exercise, WorkoutTemplate, Workout, UserMealPlan
+from models import db, User, Restriction, Meal, Exercise, WorkoutTemplate, Workout, UserMealPlan, Response
 
 # Create Flask app
 app = Flask(__name__)
@@ -148,6 +148,37 @@ def dashboard():
 
     return render_template('dashboard.html', stats=stats, meal_plan=meal_plan, workout_plan=workout_plan,
                            calendar_data=calendar_data)
+
+
+@app.route('/foodDisplay',methods=['GET', 'POST'])
+@login_required
+def food_display():
+    
+    if request.method == 'POST':
+        # Get form data
+        search = request.form.get('foodSearch')
+        current_response = Response.query.filter((Response.search == search)).first()
+        data = current_response
+        if (data == None):
+            data = internal_search_food(query=search)
+            try:
+                x = data["foods"]
+                newResponse = Response(search = search, last_searched =Response.get_time(), returned_data = data)
+                db.session.add(newResponse)
+                db.session.commit()
+            except(KeyError):
+                print("Error: api did not return a valid response")
+                print("Response was: ")
+                print(data)
+                return render_template('foodDisplay.html', foodList={})
+            
+        else:
+            data = data.get_data()
+        #print(type(foodList))
+        #print(foodList['foods']['food'])
+        return render_template('foodDisplay.html', foodList=data)
+    else:
+        return render_template('foodDisplay.html', foodList={})
 
 
 @app.route('/profile')
@@ -1049,6 +1080,65 @@ def settings():
         return redirect(url_for('settings'))
 
     return render_template('settings.html')
+
+CLIENT_ID = os.getenv('FATSECRET_CLIENT_ID')
+CLIENT_SECRET = os.getenv('FATSECRET_CLIENT_SECRET')
+TOKEN_URL = 'https://oauth.fatsecret.com/connect/token'
+API_URL = 'https://platform.fatsecret.com/rest/server.api'
+
+def get_access_token():
+    # Prepare basic auth
+    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+    headers = {
+        "Authorization": f"Basic {encoded_credentials}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    data = {
+        "grant_type": "client_credentials",
+        "scope": "basic"
+    }
+
+    response = requests.post(TOKEN_URL, headers=headers, data=data)
+    return response.json().get("access_token")
+
+def internal_search_food(query):
+    access_token = get_access_token()
+    
+    params = {
+        "method": "foods.search",
+        "search_expression": query,
+        "format": "json"
+    }
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = requests.get(API_URL, headers=headers, params=params)
+    #print(response)
+    return response.json()
+
+def internal_full_API_Method(query):
+    current_response = Response.query.filter((Response.search == query)).first()
+    data = current_response
+    if (data == None):
+        data = internal_search_food(query=query)
+        try:
+            x = data["foods"]
+            newResponse = Response(search = query, last_searched =Response.get_time(), returned_data = data)
+            #db.session.add(newResponse)
+            #db.session.commit()
+        except(KeyError):
+            print("Error: api did not return a valid response")
+            print("Response was: ")
+            print(data)
+            return {}
+    else:
+        data = data.get_data()
+        return data
 
 
 # Error handling routes

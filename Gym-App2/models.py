@@ -309,6 +309,20 @@ class Restriction(db.Model):
     def get_dietary_restrictions(self):
         return json.loads(self.dietary_restrictions)
 
+class Response(db.Model):
+    __tablename__ = 'responses'
+
+    id = db.Column(db.Integer, primary_key=True)
+    last_searched = db.Column(db.DateTime)
+    search = db.Column(db.String(64), unique=True, nullable=False)
+    returned_data = db.Column(db.JSON,nullable = False)
+
+    @staticmethod
+    def get_time():
+        return datetime.utcnow()
+    
+    def get_data(self):
+        return self.returned_data
 
 class Meal(db.Model):
     __tablename__ = 'meals'
