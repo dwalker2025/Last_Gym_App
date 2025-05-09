@@ -3,6 +3,9 @@ import json
 import sys
 import os
 
+# ToDo: finish tests they are currently nonfunctional. 
+
+
 # Add the parent directory to sys.path
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(parent_dir)
@@ -24,7 +27,7 @@ class SearchTest(unittest.TestCase):
         self.app_context.push()
 
         # Load JSON data from a file
-        with open('Gym-App2/src/Tests/chicken.json', 'r') as file:
+        with open('src/Tests/chicken.json', 'r') as file:
             self.data = json.load(file)
 
     def tearDown(self):
