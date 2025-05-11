@@ -156,13 +156,13 @@ def dashboard():
                            calendar_data=calendar_data)
 
 
-@app.route('/foodDisplay',methods=['GET', 'POST'])
+@app.route('/meal_search',methods=['GET', 'POST'])
 @login_required
-def food_display():
+def meal_search():
     
     if request.method == 'POST':
         # Get form data
-        search = request.form.get('foodSearch')
+        search = request.form.get('foodSearch').lower()
         current_response = Response.query.filter((Response.search == search)).first()
         data = current_response
         if (data == None):
