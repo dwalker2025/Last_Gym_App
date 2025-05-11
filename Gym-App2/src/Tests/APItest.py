@@ -40,10 +40,11 @@ class SearchTest(unittest.TestCase):
 
     def test_food_db(self):
         # Perform a database query within the application context
-        '''
+
         result = Response.query.filter((Response.search == "chicken")).first()
+        print(result)
         self.assertEqual(result, self.data)
-        '''
+
 
     def test_full_function(self):
         result = internal_full_API_Method("chicken")

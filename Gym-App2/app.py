@@ -35,6 +35,12 @@ login_manager.login_message_category = 'info'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.context_processor
+def utility_processor():
+    def safe_endpoint(endpoint):
+        return endpoint or ''
+    return dict(safe_endpoint=safe_endpoint)
+
 
 # Web UI Routes
 @app.route('/')
@@ -1128,12 +1134,12 @@ def internal_full_API_Method(query):
         data = internal_search_food(query=query)
         try:
             x = data["foods"]
-            newResponse = Response(search = query, last_searched =Response.get_time(), returned_data = data)
+            #newResponse = Response(search = query, last_searched =Response.get_time(), returned_data = data)
             #db.session.add(newResponse)
             #db.session.commit()
         except(KeyError):
             print("Error: api did not return a valid response")
-            print("Response was: ")
+            print(f"Response for {query} was: ")
             print(data)
             return {}
     else:

@@ -25,14 +25,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {{ 'active' if request.endpoint == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+                        <a class="nav-link {{ 'active' if safe_endpoint(request.endpoint) == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link {{ 'active' if request.endpoint == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="nav-link {{ 'active' if safe_endpoint(safe_endpoint(request.endpoint)) == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ 'active' if 'workout' in request.endpoint else '' }}" href="#" id="workoutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ 'active' if 'workout' in safe_endpoint(request.endpoint) else '' }}" href="#" id="workoutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Workouts
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="workoutDropdown">
@@ -43,7 +43,7 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ 'active' if 'meal' in request.endpoint else '' }}" href="#" id="mealDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ 'active' if 'meal' in safe_endpoint(request.endpoint) else '' }}" href="#" id="mealDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Nutrition
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="mealDropdown">
@@ -53,7 +53,7 @@
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link {{ 'active' if request.endpoint == 'about' else '' }}" href="{{ url_for('about') }}">About</a>
+                        <a class="nav-link {{ 'active' if safe_endpoint(request.endpoint) == 'about' else '' }}" href="{{ url_for('about') }}">About</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -71,10 +71,10 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link {{ 'active' if request.endpoint == 'login' else '' }}" href="{{ url_for('login') }}">Login</a>
+                        <a class="nav-link {{ 'active' if safe_endpoint(request.endpoint) == 'login' else '' }}" href="{{ url_for('login') }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ 'active' if request.endpoint == 'register' else '' }}" href="{{ url_for('register') }}">Register</a>
+                        <a class="nav-link {{ 'active' if safe_endpoint(request.endpoint) == 'register' else '' }}" href="{{ url_for('register') }}">Register</a>
                     </li>
                     {% endif %}
                 </ul>
