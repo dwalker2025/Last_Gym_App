@@ -2,6 +2,7 @@
 
 # Quick start guide:
     Go to app.py and click run and debug, when link appears, crtl+click
+    API search functions will work for several example searches such as chicken, corn, and tofu
 
 ## Overview  
 The goal of this app is to help users **plan and log their workouts** easily.

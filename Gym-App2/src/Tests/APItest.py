@@ -2,9 +2,13 @@ import unittest
 import json
 import sys
 import os
+import requests
+from unittest.mock import patch
 
-# ToDo: finish tests they are currently nonfunctional. 
+from dotenv import load_dotenv
 
+# Load environment variables from the .env file
+load_dotenv()
 
 # Add the parent directory to sys.path
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -34,16 +38,27 @@ class SearchTest(unittest.TestCase):
         # Tear down the application context
         self.app_context.pop()
 
+
     def test_food_search(self):
         result = internal_search_food('chicken')
         self.assertEqual(result, self.data)
 
     def test_food_db(self):
         # Perform a database query within the application context
-        '''
+
         result = Response.query.filter((Response.search == "chicken")).first()
-        self.assertEqual(result, self.data)
-        '''
+        #print(result)
+        self.assertEqual(result.returned_data, self.data)
+
+    def test_api_availability_mock(self):
+        # Define the API URL
+        api_url = "https://platform.fatsecret.com/rest/server.api" 
+        # Make a GET request to the API
+        response = requests.get(api_url)
+
+        # Assert that the API is reachable and returns a 200 status code
+        self.assertEqual(response.status_code, 200, "API is not available")
+
 
     def test_full_function(self):
         result = internal_full_API_Method("chicken")
